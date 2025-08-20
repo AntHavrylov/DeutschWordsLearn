@@ -36,7 +36,16 @@ jobs:
       
       # Сборка Angular приложения
       - name: Build Angular app
-        run: npm run build -- --configuration production
+        run: |
+          npm run build -- --configuration production
+          ls -la dist/
+          ls -la dist/admin4us/
+      
+      # Копируем файлы в корень для Azure SWA
+      - name: Copy built files to root
+        run: |
+          cp -r dist/admin4us/* .
+          ls -la
       
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
@@ -57,9 +66,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_BEACH_0037D5103 }}
           action: "upload"
           ###### Repository/Build Configurations ######
-          app_location: "/" # App source code path
+          app_location: "/" # App source code path (теперь файлы в корне)
           api_location: "" # Api source code path - optional
-          output_location: "dist/admin4us" # Built app content directory
+          output_location: "" # Оставляем пустым
           github_id_token: ${{ steps.idtoken.outputs.result }}
           # Отключаем встроенную сборку, так как мы собираем сами
           skip_app_build: true
