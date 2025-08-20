@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Word, WordType, ArticleType, Kasus } from '../models/word.model';
+import { Word, WordType, ArticleType, Kasus, Preposition } from '../models/word.model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +37,6 @@ export class GoogleSheetsService {
       headers.forEach((header, index) => {
         const value = values[index];
         switch (header) {
-          case 'id':
-            word.id = value;
-            break;
           case 'originalWord':
             word.originalWord = value;
             break;
@@ -56,7 +53,7 @@ export class GoogleSheetsService {
             word.article = value as ArticleType; // Type assertion
             break;
           case 'preposition':
-            word.preposition = value;
+            word.preposition = value as Preposition;
             break;
           case 'kasus':
             word.kasus = value as Kasus; // Type assertion
@@ -70,7 +67,7 @@ export class GoogleSheetsService {
       });
 
       // Basic validation for required fields
-      if (word.id && word.originalWord && word.translation && word.wordType) {
+      if (word.originalWord && word.translation && word.wordType) { // Removed word.id
         words.push(word as Word);
       } else {
         console.warn(`Skipping word due to missing required fields: ${JSON.stringify(word)}`);

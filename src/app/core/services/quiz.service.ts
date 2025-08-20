@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Word, WordType, Kasus, ArticleType } from '../models/word.model';
+import { Word, WordType, Kasus, ArticleType, Preposition } from '../models/word.model';
 import { WordStorageService } from './word-storage.service';
 import { QuizSession, QuizWord, QuizResults } from '../models/quiz.model';
 import { WordListStorageService } from './word-list-storage.service';
@@ -21,7 +21,7 @@ export class QuizService {
     if (listId) {
       const selectedList = this.wordListStorageService.getWordLists().find((list: WordList) => list.id === listId);
       if (selectedList) {
-        wordsToQuizFrom = this.wordStorageService.getWords().filter((word: Word) => selectedList.wordIds.includes(word.id));
+        wordsToQuizFrom = this.wordStorageService.getWords().filter((word: Word) => selectedList.wordIds.includes(word.originalWord)); 
       } else {
         console.warn(`Word list with ID ${listId} not found. Using all words for quiz.`);
         wordsToQuizFrom = this.wordStorageService.getWords();
@@ -30,39 +30,56 @@ export class QuizService {
       wordsToQuizFrom = this.wordStorageService.getWords();
     }
 
+    // Filter out verbs where kasus is 'None'
+    wordsToQuizFrom = wordsToQuizFrom.filter(word => {
+      return !(word.wordType === WordType.Verb && word.kasus === Kasus.None);
+    });
+
     if (wordsToQuizFrom.length < 4) {
       return false;
     }
 
     const wordsForQuiz = this.shuffleArray(wordsToQuizFrom).slice(0, wordCount);
-
     this.session = {
       words: wordsForQuiz.map((w: Word) => {
-        const isReverse = (w.learnStatus || 0) >= 3;
-        const correctAnswer = isReverse ? w.originalWord : w.translation;
-        const distractors = this.generateDistractors(correctAnswer, this.wordStorageService.getWords(), isReverse ? 'originalWord' : 'translation');
-        const options = this.shuffleArray([correctAnswer, ...distractors]);
+        const isReverse = (w.learnStatus || 0) >= 2; // Levels 0-2: original word shown, guess translation. Levels 3-7: translation shown, guess original word/parts.
+        let correctAnswer: string;
+        let distractors: string[];
+        let options: string[];
+        let quizWord: QuizWord;
 
-        let quizWord: QuizWord = {
-          ...w,
-          answer: null,
-          selected: null,
-          options: options,
-          isReverse: isReverse,
-          correctArticle: w.article,
-          selectedArticle: null,
-          correctAnswerDisplay: correctAnswer
-        };
+        if (!isReverse) { // Levels 0-2: original word shown, guess translation
+          correctAnswer = w.translation;
+          distractors = this.generateDistractors(correctAnswer, wordsToQuizFrom, 'translation');
+          options = this.shuffleArray([correctAnswer, ...distractors]);
+          quizWord = { ...w, answer: null, selected: null, isReverse: isReverse, options: options, correctAnswerDisplay: correctAnswer };
+        } else { // Levels 3-7: translation shown, guess original word/parts
+          
+          
+          correctAnswer = w.originalWord;
+          distractors = this.generateDistractors(correctAnswer, wordsToQuizFrom, 'originalWord');
+          options = this.shuffleArray([correctAnswer, ...distractors]);
+          quizWord = { ...w, answer: null, selected: null, isReverse: isReverse, options: options, correctAnswerDisplay: correctAnswer };
 
-        if (w.wordType === WordType.Verb) {
-          quizWord.correctPreposition = w.preposition;
-          quizWord.selectedPreposition = null;
-          quizWord.prepositionOptions = this.generatePrepositionOptions(w.preposition);
+          if (w.wordType === WordType.Noun) {
+            quizWord.correctArticle = w.article;
+            quizWord.selectedArticle = null;
+          } else if (w.wordType === WordType.Verb) {
+            quizWord.correctPreposition = w.preposition;
+            quizWord.selectedPreposition = null;
+            quizWord.prepositionOptions = this.generatePrepositionOptions(w.preposition);
 
-          quizWord.correctKasus = w.kasus;
-          quizWord.selectedKasus = null;
-          quizWord.kasusOptions = this.generateKasusOptions(w.kasus);
+            quizWord.correctKasus = w.kasus;
+            quizWord.selectedKasus = null;
+            quizWord.kasusOptions = this.generateKasusOptions(w.kasus);
+
+            // For verbs at levels 3-7, hide the preposition if it exists
+            if (w.preposition) {
+              quizWord.hiddenPart = 'preposition';
+            }
+          }
         }
+        console.log('Quiz Word:', quizWord); // Add this line
         return quizWord;
       }),
       currentIndex: 0,
@@ -73,6 +90,14 @@ export class QuizService {
     };
 
     return true;
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
 
   private generateDistractors(correctAnswer: string, wordPool: Word[], type: 'originalWord' | 'translation'): string[] {
@@ -87,8 +112,8 @@ export class QuizService {
     return distractors;
   }
 
-  private generatePrepositionOptions(correctPreposition?: string): string[] {
-    const commonPrepositions = ['mit', 'nach', 'auf', 'von', 'in', 'an', 'über', 'unter', 'vor', 'hinter', 'neben', 'zwischen', 'durch', 'für', 'gegen', 'ohne', 'um', 'aus', 'bei', 'gegenüber', 'seit', 'zu', 'entlang'];
+  private generatePrepositionOptions(correctPreposition?: Preposition): Preposition[] {
+    const commonPrepositions = Object.values(Preposition);
     let options = correctPreposition ? [correctPreposition] : [];
     const filtered = commonPrepositions.filter(p => p !== correctPreposition);
     while (options.length < 4 && filtered.length > 0) {
@@ -109,7 +134,7 @@ export class QuizService {
     return this.shuffleArray(options);
   }
 
-  handleAnswer(selectedOption: string, selectedArticle?: ArticleType, selectedPreposition?: string, selectedKasus?: Kasus): void {
+  handleAnswer(selectedOption: string, selectedArticle?: ArticleType, selectedPreposition?: Preposition, selectedKasus?: Kasus): void {
     if (!this.session) return;
 
     const currentWord = this.session.words[this.session.currentIndex];
@@ -121,108 +146,85 @@ export class QuizService {
     let isCorrectWord = false;
     let isCorrectArticle = true;
     let isCorrectPreposition = true;
-    let isCorrectKasus = true;
 
-    if (currentWord.isReverse) {
+    if (currentWord.isReverse) { // Levels 3-7: translation shown, guess original word/parts
       isCorrectWord = selectedOption === currentWord.originalWord;
-      isCorrectArticle = currentWord.correctArticle === undefined || selectedArticle === currentWord.correctArticle;
 
-      if (currentWord.wordType === WordType.Verb) {
-        isCorrectPreposition = currentWord.correctPreposition === undefined || selectedPreposition === currentWord.correctPreposition;
-        isCorrectKasus = currentWord.correctKasus === undefined || selectedKasus === currentWord.correctKasus;
+      if (currentWord.wordType === WordType.Noun) {
+        isCorrectArticle = currentWord.correctArticle === undefined || selectedArticle === currentWord.correctArticle;
+        currentWord.answer = isCorrectWord && isCorrectArticle;
+      } else if (currentWord.wordType === WordType.Verb) {
+        if (currentWord.hiddenPart === 'preposition') {
+          isCorrectPreposition = (selectedPreposition === currentWord.correctPreposition);
+        }
+        currentWord.answer = isCorrectWord && isCorrectPreposition;
+      } else { // For other word types (Adjective, etc.)
+        currentWord.answer = isCorrectWord;
       }
-      currentWord.answer = isCorrectWord && isCorrectArticle && isCorrectPreposition && isCorrectKasus;
-    } else {
+    } else { // Levels 0-2: original word shown, guess translation
       isCorrectWord = selectedOption === currentWord.translation;
       currentWord.answer = isCorrectWord;
     }
 
     // If the answer is incorrect, set correctAnswerDisplay
     if (currentWord.answer === false) {
-      currentWord.correctAnswerDisplay = currentWord.isReverse ? currentWord.originalWord : currentWord.translation;
-      // Optionally, add article/preposition/kasus to the display string if needed
-      if (currentWord.isReverse && currentWord.correctArticle && currentWord.correctArticle !== ArticleType.None) {
-        currentWord.correctAnswerDisplay = `${currentWord.correctArticle} ${currentWord.correctAnswerDisplay}`;
-      }
-      if (currentWord.isReverse && currentWord.wordType === WordType.Verb) {
-        if (currentWord.correctPreposition) {
-          currentWord.correctAnswerDisplay = `${currentWord.correctPreposition} ${currentWord.correctAnswerDisplay}`;
+      if (!currentWord.isReverse) {
+        currentWord.correctAnswerDisplay = currentWord.translation;
+      } else {
+        let display = currentWord.originalWord;
+        if (currentWord.wordType === WordType.Noun && currentWord.correctArticle && currentWord.correctArticle !== ArticleType.None) {
+          display = `${currentWord.correctArticle} ${display}`;
         }
-        if (currentWord.correctKasus && currentWord.correctKasus !== Kasus.None) {
-          currentWord.correctAnswerDisplay = `${currentWord.correctAnswerDisplay} (${currentWord.correctKasus})`;
+        if (currentWord.wordType === WordType.Verb) {
+          if (currentWord.correctPreposition) {
+            display = `${currentWord.correctPreposition} ${display}`;
+          }
+          if (currentWord.correctKasus && currentWord.correctKasus !== Kasus.None) {
+            display = `${display} (${currentWord.correctKasus})`;
+          }
+          if (currentWord.reflexive) {
+            display = `sich ${display}`;
+          }
         }
-        if (currentWord.reflexive) {
-          currentWord.correctAnswerDisplay = `sich ${currentWord.correctAnswerDisplay}`;
-        }
+        currentWord.correctAnswerDisplay = display;
       }
     }
   }
 
   nextCard(): void {
     if (!this.session) return;
-    if (this.session.currentIndex < this.session.totalQuestions - 1) {
+
+    if (this.session.currentIndex < this.session.words.length - 1) {
       this.session.currentIndex++;
     } else {
-      this.endQuiz();
-    }
-  }
-
-  previousCard(): void {
-    if (!this.session) return;
-    if (this.session.currentIndex > 0) {
-      this.session.currentIndex--;
+      this.session.endTime = new Date();
     }
   }
 
   endQuiz(): QuizResults | null {
-    if (!this.session) return null;
+    if (!this.session || !this.session.endTime) return null;
 
-    this.session.endTime = new Date();
-    const correctAnswers = this.session.words.filter(w => w.answer === true);
-    const incorrectAnswers = this.session.words.filter(w => w.answer === false);
-    const score = correctAnswers.length;
-    const percentage = this.calculateScore(score, this.session.totalQuestions);
-    const timeSpent = (this.session.endTime.getTime() - this.session.startTime.getTime()) / 1000;
-
-    // Update learnStatus
-    const allWords = this.wordStorageService.getWords();
-    correctAnswers.forEach(answeredWord => {
-      const wordToUpdate = allWords.find(w => w.id === answeredWord.id);
-      if (wordToUpdate) {
-        wordToUpdate.learnStatus = Math.min(7, (wordToUpdate.learnStatus || 0) + 1);
-      }
-    });
-    incorrectAnswers.forEach(answeredWord => {
-      const wordToUpdate = allWords.find(w => w.id === answeredWord.id);
-      if (wordToUpdate) {
-        wordToUpdate.learnStatus = Math.max(0, (wordToUpdate.learnStatus || 0) - 1);
-      }
-    });
-    this.wordStorageService.clearAllWords();
-    allWords.forEach(w => this.wordStorageService.saveWord(w));
+    const correctAnswers = this.session.words.filter(w => w.answer);
+    const incorrectAnswers = this.session.words.filter(w => !w.answer);
+    const timeSpent = (this.session.endTime.getTime() - this.session.startTime.getTime()) / 1000; // in seconds
 
     const results: QuizResults = {
-      score,
-      percentage,
+      score: correctAnswers.length,
+      percentage: (correctAnswers.length / this.session.totalQuestions) * 100,
       totalQuestions: this.session.totalQuestions,
-      timeSpent,
-      correctAnswers,
-      incorrectAnswers
+      timeSpent: timeSpent,
+      correctAnswers: correctAnswers,
+      incorrectAnswers: incorrectAnswers
     };
 
+    // Update word learn statuses
+    results.correctAnswers.forEach(word => {
+      this.wordStorageService.updateWordLearnStatus(word.originalWord, true);
+    });
+    results.incorrectAnswers.forEach(word => {
+      this.wordStorageService.updateWordLearnStatus(word.originalWord, false);
+    });
+
     return results;
-  }
-
-  private calculateScore(correct: number, total: number): number {
-    if (total === 0) return 0;
-    return parseFloat(((correct / total) * 100).toFixed(2));
-  }
-
-  private shuffleArray<T>(array: T[]): T[] {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
   }
 }

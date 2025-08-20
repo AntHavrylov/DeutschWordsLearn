@@ -11,15 +11,14 @@
             <div *ngIf="filteredWords.length === 0">
                 <p>No words found. Add some!</p>
             </div>
-                        <div *ngFor="let word of filteredWords" class="word-item" [attr.data-id]="word.id"> <!-- Changed word.word to word.id -->
+                        <div *ngFor="let word of filteredWords" class="word-item" [attr.data-id]="word.originalWord"> <!-- Changed word.word to word.id -->
                 <div>
                     <strong>{{ word.article ? word.article + ' ' : '' }}{{ word.originalWord }}</strong>: {{ word.translation }} <!-- Changed word.word to word.originalWord -->
                     <br>
                     <small>Learn Status: {{ (word.learnStatus || 0) / 7 * 100 | number:'1.0-0' }}%</small>
                 </div>
                 <div class="word-item-actions">
-                    <button class="edit-btn">✏️</button>
-                    <button class="delete-btn" (click)="deleteWord(word.id)">🗑️</button> <!-- Changed word.word to word.id -->
+                    <button class="delete-btn" (click)="deleteWord(word.originalWord)">🗑️</button> <!-- Changed word.word to word.id -->
                 </div>
             </div>
         </div>

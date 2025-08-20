@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Word, ArticleType } from '../models/word.model';
-import { v4 as uuidv4 } from 'uuid'; // Added this import
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +12,8 @@ export class WordStorageService {
   getWords(): Word[] {
     try {
       const localData = localStorage.getItem(this.WORDS_STORAGE_KEY);
-      return localData ? JSON.parse(localData) : [];
+      const words = localData ? JSON.parse(localData) : [];
+      return words;
     } catch (error) {
       console.error("Error getting words:", error);
       return [];
@@ -28,22 +28,10 @@ export class WordStorageService {
 
       const words = this.getWords();
 
-      // Generate ID if not present
-      if (!wordObject.id) {
-        wordObject.id = uuidv4();
-      }
-
-      // Check for duplicate ID instead of originalWord
-      if (words.some(word => word.id === wordObject.id)) {
-        console.error("Duplicate word ID detected. Updating existing word instead of adding new one.");
-        // Optionally, update the existing word if ID matches
-        const index = words.findIndex(word => word.id === wordObject.id);
-        if (index !== -1) {
-          words[index] = wordObject;
-          this.saveWordsToLocalStorage(words);
-          return true;
-        }
-        return false; // Should not happen if findIndex works
+      // Check for duplicate originalWord
+      if (words.some(word => word.originalWord === wordObject.originalWord)) {
+        console.warn("Duplicate word detected. Skipping update."); // Changed error to warn
+        return true; // Indicate success, but no change was made
       }
 
       words.push(wordObject);
@@ -55,11 +43,11 @@ export class WordStorageService {
     }
   }
 
-  deleteWord(wordId: string): boolean {
+  deleteWord(originalWord: string): boolean {
     try {
       let words = this.getWords();
       const initialLength = words.length;
-      words = words.filter(word => word.id !== wordId); // Changed word.originalWord to word.id
+      words = words.filter(word => word.originalWord !== originalWord);
       if (words.length < initialLength) {
         this.saveWordsToLocalStorage(words);
         return true;
@@ -71,13 +59,13 @@ export class WordStorageService {
     }
   }
 
-  updateWord(wordId: string, updatedWordObject: Word): boolean {
+  updateWord(originalWord: string, updatedWordObject: Word): boolean {
     try {
       if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {
         throw new Error("Invalid word object");
       }
       let words = this.getWords();
-      const index = words.findIndex(word => word.id === wordId); // Changed word.originalWord to word.id
+      const index = words.findIndex(word => word.originalWord === originalWord);
       if (index !== -1) {
         words[index] = updatedWordObject;
         this.saveWordsToLocalStorage(words);
@@ -104,7 +92,7 @@ export class WordStorageService {
     try {
       const words = this.getWords();
       const replacer = (key: string, value: any) => {
-        // Exclude learnStatus from the output, but keep id
+        // Exclude learnStatus from the output
         if (key === 'learnStatus') {
           return undefined;
         }
@@ -125,10 +113,6 @@ export class WordStorageService {
       }
       // Basic validation of each object
       for (const word of words) {
-        // Ensure ID is present or generate one
-        if (!word.id) {
-          word.id = uuidv4();
-        }
         if (!word || !word.originalWord || !word.translation) {
           throw new Error("Invalid word object in JSON string.");
         }
@@ -153,14 +137,10 @@ export class WordStorageService {
       }
 
       const existingWords = this.getWords();
-      const existingWordSet = new Set(existingWords.map(word => word.id)); // Changed word.originalWord to word.id
+      const existingWordSet = new Set(existingWords.map(word => word.originalWord));
       let importedCount = 0;
 
       for (const word of newWords) {
-        // Ensure ID is present or generate one
-        if (!word.id) {
-          word.id = uuidv4();
-        }
         if (!word || !word.originalWord || !word.translation) {
           console.error("Invalid word object in JSON string, skipping:", word);
           continue;
@@ -169,12 +149,12 @@ export class WordStorageService {
         if (word.article === undefined) {
           word.article = ArticleType.None;
         }
-        if (!existingWordSet.has(word.id)) { // Changed word.originalWord to word.id
+        if (!existingWordSet.has(word.originalWord)) {
           if (word.learnStatus === undefined) {
             word.learnStatus = 0;
           }
           existingWords.push(word);
-          existingWordSet.add(word.id); // Changed word.originalWord to word.id
+          existingWordSet.add(word.originalWord);
           importedCount++;
         }
       }
@@ -214,5 +194,19 @@ export class WordStorageService {
       if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
+  }
+
+  updateWordLearnStatus(originalWord: string, isCorrect: boolean): void {
+    const words = this.getWords();
+    const wordIndex = words.findIndex(w => w.originalWord === originalWord);
+    if (wordIndex > -1) {
+      const word = words[wordIndex];
+      if (isCorrect) {
+        word.learnStatus = (word.learnStatus || 0) + 1;
+      } else {
+        word.learnStatus = Math.max(0, (word.learnStatus || 0) - 1);
+      }
+      this.saveWordsToLocalStorage(words);
+    }
   }
 }

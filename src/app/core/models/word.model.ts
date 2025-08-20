@@ -1,37 +1,13 @@
-export interface Word {
-  id: string;
-  originalWord: string;
-  translation: string;
-  description?: string;
-  wordType: WordType;
-  article?: ArticleType;
-  preposition?: string;
-  kasus?: Kasus;
-  reflexive?: boolean;
-  learnStatus?: number; // Added learnStatus
-  sources?: string[]; // Added this line
-}
-
 export enum WordType {
-  Nomen = 'Nomen',
+  Noun = 'Nomen',
   Verb = 'Verb',
-  Adjektiv = 'Adjektiv',
+  Adjective = 'Adjektiv',
   Adverb = 'Adverb',
-  Pronomen = 'Pronomen',
-  Praeposition = 'Präposition',
-  Konjunktion = 'Konjunktion',
-  Interjektion = 'Interjektion',
-  Numerale = 'Numerale',
-  Artikel = 'Artikel',
+  Pronoun = 'Pronoun',
+  Preposition = 'Preposition',
+  Conjunction = 'Conjunction',
+  Interjection = 'Interjection',
   Other = 'Other'
-}
-
-export enum ArticleType {
-  Der = 'der',
-  Die = 'die',
-  Das = 'das',
-  Plural = 'die (Plural)',
-  None = 'None'
 }
 
 export enum Kasus {
@@ -40,4 +16,52 @@ export enum Kasus {
   Dativ = 'Dativ',
   Genitiv = 'Genitiv',
   None = 'None'
+}
+
+export enum ArticleType {
+  Definit = 'Definit',
+  Indefinit = 'Indefinit',
+  Ohne = 'Ohne',
+  None = 'None'
+}
+
+export enum Preposition {
+  Mit = 'mit',
+  Nach = 'nach',
+  Auf = 'auf',
+  Von = 'von',
+  In = 'in',
+  An = 'an',
+  Ueber = 'über',
+  Unter = 'unter',
+  Vor = 'vor',
+  Hinter = 'hinter',
+  Neben = 'neben',
+  Zwischen = 'zwischen',
+  Durch = 'durch',
+  Fuer = 'für',
+  Gegen = 'gegen',
+  Ohne = 'ohne',
+  Um = 'um',
+  Aus = 'aus',
+  Bei = 'bei',
+  Gegenueber = 'gegenüber',
+  Seit = 'seit',
+  Zu = 'zu',
+  Entlang = 'entlang'
+}
+
+export interface Word {
+  id: string;
+  originalWord: string;
+  translation: string;
+  wordType: WordType;
+  learnStatus?: number;
+  article?: ArticleType;
+  plural?: string;
+  preposition?: Preposition;
+  kasus?: Kasus;
+  reflexive?: boolean;
+  description?: string;
+  sources?: string[];
 }

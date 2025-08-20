@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { QuizService } from '../../core/services/quiz.service';
 import { StatsService } from '../../core/services/stats.service'; // Import StatsService
 import { QuizWord, QuizResults } from '../../core/models/quiz.model';
-import { WordType, Kasus, ArticleType } from '../../core/models/word.model'; // Import WordType, Kasus, and ArticleType
+import { WordType, Kasus, ArticleType, Preposition } from '../../core/models/word.model'; // Import WordType, Kasus, and ArticleType
 import { WordListStorageService } from '../../core/services/word-list-storage.service'; // Added this
 import { WordList } from '../../core/models/word-list.model'; // Added this
 import { FormsModule } from '@angular/forms'; // Added FormsModule for select
@@ -21,7 +21,7 @@ export class QuizComponent implements OnInit {
   showDescription = false;
   selectedOption: string | null = null;
   selectedArticle: string | null = null;
-  selectedPreposition: string | null = null; // New property
+  selectedPreposition: Preposition | null = null; // New property
   selectedKasus: Kasus | null = null; // New property
 
   wordLists: WordList[] = []; // Added this
@@ -74,7 +74,7 @@ export class QuizComponent implements OnInit {
     }
   }
 
-  selectPreposition(preposition: string): void { // New method
+  selectPreposition(preposition: Preposition): void { // New method
     if (this.currentWord && this.currentWord.answer === null) {
       this.selectedPreposition = preposition;
     }
@@ -94,13 +94,33 @@ export class QuizComponent implements OnInit {
     if (!this.quizService.session || !this.currentWord) return;
 
     if (this.currentWord.answer === null) {
-      if (this.selectedOption) {
-        this.quizService.handleAnswer(
-          this.selectedOption,
-          this.selectedArticle ? (this.selectedArticle as ArticleType) : undefined,
-          this.selectedPreposition || undefined,
-          this.selectedKasus || undefined
-        );
+      if (this.currentWord.isReverse) { // Levels 3-7: translation shown, guess original word/parts
+        if (this.currentWord.wordType === WordType.Noun) {
+          this.quizService.handleAnswer(
+            this.selectedOption || '',
+            this.selectedArticle ? (this.selectedArticle as ArticleType) : undefined
+          );
+        } else if (this.currentWord.wordType === WordType.Verb) {
+          this.quizService.handleAnswer(
+            this.selectedOption || '',
+            undefined,
+            this.selectedPreposition || undefined,
+            this.selectedKasus || undefined
+          );
+        } else { // For other word types
+          this.quizService.handleAnswer(
+            this.selectedOption || ''
+          );
+        }
+      } else { // Levels 0-2: original word shown, guess translation
+        if (this.selectedOption) {
+          this.quizService.handleAnswer(
+            this.selectedOption,
+            this.selectedArticle ? (this.selectedArticle as ArticleType) : undefined,
+            this.selectedPreposition || undefined,
+            this.selectedKasus || undefined
+          );
+        }
       }
     } else {
       this.quizService.nextCard();

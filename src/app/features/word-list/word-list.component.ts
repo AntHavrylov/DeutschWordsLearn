@@ -37,9 +37,9 @@ export class WordListComponent implements OnInit {
     );
   }
 
-  deleteWord(wordId: string): void {
-    if (confirm(`Are you sure you want to delete "${wordId}"?`)) {
-      this.wordStorageService.deleteWord(wordId);
+  deleteWord(originalWord: string): void {
+    if (confirm(`Are you sure you want to delete "${originalWord}"?`)) {
+      this.wordStorageService.deleteWord(originalWord);
       this.loadWords();
     }
   }

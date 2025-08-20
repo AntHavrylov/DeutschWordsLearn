@@ -1,6 +1,6 @@
 <section class="quiz-section" aria-labelledby="quiz-heading">
     <h2 id="quiz-heading">Quiz</h2>
-    <div *ngIf="!quizService.session">
+    <div class="quiz-controls">
         <div class="quiz-list-selection">
             <label for="quiz-list-select">Wortliste auswählen:</label>
             <select id="quiz-list-select" [(ngModel)]="selectedListId">
@@ -15,24 +15,45 @@
             <ng-container *ngIf="currentWord">
                 <div *ngIf="currentWord.isReverse; else standardQuestion">
                     <h2>{{ currentWord.translation }}</h2>
-                    <div class="article-quiz-options" *ngIf="currentWord.correctArticle">
-                        <button class="article-option-btn" *ngFor="let article of ['der', 'die', 'das']" [class.selected]="selectedArticle === article" (click)="selectArticle(article)">{{ article }}</button>
-                    </div>
 
-                    <div class="preposition-quiz-options" *ngIf="currentWord.wordType === WordType.Verb && currentWord.correctPreposition">
-                        <h3>Präposition:</h3>
-                        <button class="preposition-option-btn" *ngFor="let prep of currentWord.prepositionOptions" [class.selected]="selectedPreposition === prep" (click)="selectPreposition(prep)">{{ prep }}</button>
-                    </div>
+                    <!-- Guessing for Nouns (Level 3-7) -->
+                    <ng-container *ngIf="currentWord.wordType === WordType.Noun">
+                        <div class="article-quiz-options" *ngIf="currentWord.correctArticle && currentWord.correctArticle !== ArticleType.None && currentWord.correctArticle !== ArticleType.Ohne">
+                            <button class="article-option-btn" *ngFor="let article of ['der', 'die', 'das']" [class.selected]="selectedArticle === article" (click)="selectArticle(article)">{{ article }}</button>
+                        </div>
+                        <div class="options">
+                            <button *ngFor="let option of currentWord.options" class="option-btn" [class.selected]="selectedOption === option" (click)="selectOption(option)">{{ option }}</button>
+                        </div>
+                    </ng-container>
 
-                    <div class="kasus-quiz-options" *ngIf="currentWord.wordType === WordType.Verb && currentWord.correctKasus">
-                        <h3>Kasus:</h3>
-                        <button class="kasus-option-btn" *ngFor="let k of currentWord.kasusOptions" [class.selected]="selectedKasus === k" (click)="selectKasus(k)">{{ k }}</button>
-                    </div>
+                    <!-- Guessing for Verbs (Level 3-7) -->
+                    <ng-container *ngIf="currentWord.wordType === WordType.Verb">
+                        <div class="article-quiz-options" *ngIf="currentWord.hiddenPart === 'preposition'">
+                            <button class="preposition-option-btn" *ngFor="let prep of currentWord.prepositionOptions" [class.selected]="selectedPreposition === prep" (click)="selectPreposition(prep)">{{ prep }}</button>
+                        </div>
+
+                        <div class="options">
+                            <button *ngFor="let option of currentWord.options" class="option-btn" [class.selected]="selectedOption === option" (click)="selectOption(option)">{{ option }}</button>
+                        </div>
+
+                        <div *ngIf="currentWord.hiddenPart === 'kasus'">
+                            <h3>Kasus:</h3>
+                            <button class="kasus-option-btn" *ngFor="let k of currentWord.kasusOptions" [class.selected]="selectedKasus === k" (click)="selectKasus(k)">{{ k }}</button>
+                        </div>
+                    </ng-container>
+
+                    <!-- Guessing for other word types (Level 3-7) -->
+                    <ng-container *ngIf="currentWord.wordType !== WordType.Noun && currentWord.wordType !== WordType.Verb">
+                        <div class="options">
+                            <button *ngFor="let option of currentWord.options" class="option-btn" [class.selected]="selectedOption === option" (click)="selectOption(option)">{{ option }}</button>
+                        </div>
+                    </ng-container>
                 </div>
-                                                <ng-template #standardQuestion>
+
+                <ng-template #standardQuestion>
                     <h2>
-                        <!-- Display article for Nomen -->
-                        <ng-container *ngIf="currentWord.wordType === WordType.Nomen && currentWord.article !== ArticleType.None">
+                        <!-- Display article for Noun -->
+                        <ng-container *ngIf="currentWord.wordType === WordType.Noun && currentWord.article !== ArticleType.None">
                             {{ currentWord.article }}
                         </ng-container>
                         <!-- Always display originalWord -->
@@ -50,6 +71,10 @@
                             </ng-container>
                         </ng-container>
                     </h2>
+                    <!-- Options for levels 0-2 (original word shown, guess translation) -->
+                    <div class="options">
+                        <button *ngFor="let option of currentWord.options" class="option-btn" [class.selected]="selectedOption === option" (click)="selectOption(option)">{{ option }}</button>
+                    </div>
                 </ng-template>
 
                 <div class="learn-status">
@@ -62,10 +87,6 @@
 
                 <p class="description" *ngIf="showDescription">{{ currentWord.description }}</p>
                 <button class="toggle-description quiz-toggle-btn" (click)="toggleDescription()">{{ showDescription ? '-' : '+' }}</button>
-
-                <div class="options">
-                    <button *ngFor="let option of currentWord.options" class="option-btn" [class.selected]="selectedOption === option" (click)="selectOption(option)">{{ option }}</button>
-                </div>
 
                 <div class="solution" *ngIf="currentWord.answer === false">
                     Correct Answer: {{ currentWord.correctAnswerDisplay }}

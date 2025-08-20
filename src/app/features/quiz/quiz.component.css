@@ -1,0 +1,26 @@
+.quiz-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.quiz-controls select,
+.quiz-controls button {
+    height: 38px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.quiz-list-selection {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quiz-list-selection label {
+    line-height: 38px;
+}

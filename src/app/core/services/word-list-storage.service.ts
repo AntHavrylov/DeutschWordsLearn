@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WordList } from '../models/word-list.model';
-import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class WordListStorageService {
       if (wordLists.length === 0) {
         // Initialize with default list if no lists exist
         const defaultList: WordList = {
-          id: uuidv4(),
+          id: uuidv4(), // Use a fixed ID for the default list
           name: 'Meine erste Liste',
           wordIds: []
         };
@@ -42,9 +42,6 @@ export class WordListStorageService {
         wordLists[index] = wordList;
       } else {
         // Add new list
-        if (!wordList.id) {
-          wordList.id = uuidv4(); // Generate ID for new lists
-        }
         wordLists.push(wordList);
       }
       this.saveWordListsToLocalStorage(wordLists);
@@ -83,12 +80,12 @@ export class WordListStorageService {
     }
   }
 
-  addWordToWordList(listId: string, wordId: string): boolean {
+  addWordToWordList(listId: string, originalWord: string): boolean {
     try {
       const wordLists = this.getWordLists();
       const list = wordLists.find(l => l.id === listId);
-      if (list && !list.wordIds.includes(wordId)) {
-        list.wordIds.push(wordId);
+      if (list && !list.wordIds.includes(originalWord)) {
+        list.wordIds.push(originalWord);
         this.saveWordListsToLocalStorage(wordLists);
         return true;
       }
@@ -99,13 +96,13 @@ export class WordListStorageService {
     }
   }
 
-  removeWordFromWordList(listId: string, wordId: string): boolean {
+  removeWordFromWordList(listId: string, originalWord: string): boolean {
     try {
       const wordLists = this.getWordLists();
       const list = wordLists.find(l => l.id === listId);
       if (list) {
         const initialLength = list.wordIds.length;
-        list.wordIds = list.wordIds.filter(id => id !== wordId);
+        list.wordIds = list.wordIds.filter(word => word !== originalWord);
         if (list.wordIds.length < initialLength) {
           this.saveWordListsToLocalStorage(wordLists);
           return true;
@@ -120,9 +117,7 @@ export class WordListStorageService {
 
   private saveWordListsToLocalStorage(wordLists: WordList[]): void {
     try {
-      console.log('Saving word lists to localStorage:', JSON.stringify(wordLists));
       localStorage.setItem(this.WORD_LISTS_STORAGE_KEY, JSON.stringify(wordLists));
-      console.log('Word lists saved successfully.');
     } catch (error) {
       console.error("Fehler beim Speichern der Wortlisten im lokalen Speicher:", error);
     }

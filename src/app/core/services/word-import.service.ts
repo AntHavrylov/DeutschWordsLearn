@@ -29,7 +29,7 @@ export class WordImportService {
             if (saved) {
               importedCount++;
               if (listId) { // If a listId is provided, add word to list
-                this.wordListStorageService.addWordToWordList(listId, word.id); // Use word.id
+                this.wordListStorageService.addWordToWordList(listId, word.originalWord); // Use word.originalWord
               }
             }
           } catch (e) {

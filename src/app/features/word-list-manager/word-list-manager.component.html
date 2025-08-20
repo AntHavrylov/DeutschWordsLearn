@@ -27,7 +27,7 @@
     <ul>
       <li *ngFor="let word of wordsInSelectedList">
         {{ word.originalWord }} - {{ word.translation }}
-        <button (click)="removeWordFromList(word.id)">Entfernen</button>
+        <button (click)="removeWordFromList(word.originalWord)">Entfernen</button>
       </li>
     </ul>
 
@@ -35,7 +35,7 @@
     <div *ngIf="availableWordsToAdd.length === 0">Keine weiteren Wörter zum Hinzufügen.</div>
     <select [(ngModel)]="selectedWordToAdd" *ngIf="availableWordsToAdd.length > 0">
       <option value="">-- Wort auswählen --</option>
-      <option *ngFor="let word of availableWordsToAdd" [value]="word.id">
+      <option *ngFor="let word of availableWordsToAdd" [value]="word.originalWord">
         {{ word.originalWord }} - {{ word.translation }}
       </option>
     </select>

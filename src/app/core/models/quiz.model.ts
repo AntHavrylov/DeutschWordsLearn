@@ -1,4 +1,4 @@
-import { Word, WordType, ArticleType, Kasus } from './word.model';
+import { Word, WordType, ArticleType, Kasus, Preposition } from './word.model';
 
 export interface QuizWord extends Word {
   answer: boolean | null;
@@ -7,13 +7,14 @@ export interface QuizWord extends Word {
   isReverse: boolean;
   correctArticle?: ArticleType;
   selectedArticle?: ArticleType | null;
-  correctPreposition?: string;
-  selectedPreposition?: string | null;
+  correctPreposition?: Preposition;
+  selectedPreposition?: Preposition | null;
   correctKasus?: Kasus;
   selectedKasus?: Kasus | null;
-  prepositionOptions?: string[];
+  prepositionOptions?: Preposition[];
   kasusOptions?: Kasus[];
   correctAnswerDisplay?: string; // Added this line
+  hiddenPart?: 'preposition' | 'kasus';
 }
 
 export interface QuizSession {
