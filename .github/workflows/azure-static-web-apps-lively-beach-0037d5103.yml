@@ -44,8 +44,14 @@ jobs:
       # Копируем файлы в корень для Azure SWA
       - name: Copy built files to root
         run: |
+          echo "Files in dist/wordlearn-angular:"
+          ls -la dist/wordlearn-angular/
+          echo "Copying files to root..."
           cp -r dist/wordlearn-angular/* .
+          echo "Files in root after copy:"
           ls -la
+          echo "Checking for index.html:"
+          ls -la index.html || echo "index.html not found"
       
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
@@ -72,6 +78,7 @@ jobs:
           github_id_token: ${{ steps.idtoken.outputs.result }}
           # Отключаем встроенную сборку, так как мы собираем сами
           skip_app_build: true
+          app_artifact_location: "dist/wordlearn-angular" # Указываем папку с артефактами
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
