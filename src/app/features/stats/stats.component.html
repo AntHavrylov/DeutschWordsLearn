@@ -1,0 +1,19 @@
+<section id="stats-dashboard" class="stats-section" aria-labelledby="stats-heading">
+    <h2 id="stats-heading">Mein Fortschritt</h2>
+    <button (click)="resetStats()">Statistiken zurücksetzen</button>
+
+    <h3>Statistiken</h3>
+    <div class="stats-grid">
+        <div><strong>Gesamtwörter:</strong> {{ stats.totalWords }}</div>
+        <div><strong>Absolvierte Quizze:</strong> {{ stats.quizzesTaken }}</div>
+        <div><strong>Durchschnittliche Punktzahl:</strong> {{ stats.averageScore | number:'1.2-2' }}%</div>
+        <div><strong>Gesamtstudienzeit:</strong> {{ stats.studyTime / 60 | number:'1.2-2' }} Minuten</div>
+    </div>
+    <h4>Schwierigste Wörter:</h4>
+    <ul>
+        <li *ngFor="let word of mostDifficultWords">{{ word }}</li>
+        <li *ngIf="mostDifficultWords.length === 0">Noch keine Daten</li>
+    </ul>
+    <h4>Letzte Quizze:</h4>
+    <div id="quiz-history-chart"></div>
+</section>

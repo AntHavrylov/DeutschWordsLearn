@@ -1,0 +1,44 @@
+<section class="word-list-manager-section">
+  <h2>Wortlisten verwalten</h2>
+
+  <div class="list-creation">
+    <input type="text" [(ngModel)]="newListName" placeholder="Name der neuen Liste">
+    <button (click)="createList()">Liste erstellen</button>
+  </div>
+
+  <div class="list-selection">
+    <h3>Ihre Listen:</h3>
+    <div *ngIf="wordLists.length === 0">Noch keine Listen erstellt.</div>
+    <div class="list-buttons">
+      <button *ngFor="let list of wordLists"
+              [class.selected]="selectedList && selectedList.id === list.id"
+              (click)="selectList(list)">
+        {{ list.name }} ({{ list.wordIds.length }})
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="selectedList" class="selected-list-details">
+    <h3>{{ selectedList.name }}</h3>
+    <button class="delete-list-btn" (click)="deleteList(selectedList.id)">Liste löschen</button>
+
+    <h4>Wörter in dieser Liste:</h4>
+    <div *ngIf="wordsInSelectedList.length === 0">Noch keine Wörter in dieser Liste.</div>
+    <ul>
+      <li *ngFor="let word of wordsInSelectedList">
+        {{ word.originalWord }} - {{ word.translation }}
+        <button (click)="removeWordFromList(word.id)">Entfernen</button>
+      </li>
+    </ul>
+
+    <h4>Wörter zur Liste hinzufügen:</h4>
+    <div *ngIf="availableWordsToAdd.length === 0">Keine weiteren Wörter zum Hinzufügen.</div>
+    <select [(ngModel)]="selectedWordToAdd" *ngIf="availableWordsToAdd.length > 0">
+      <option value="">-- Wort auswählen --</option>
+      <option *ngFor="let word of availableWordsToAdd" [value]="word.id">
+        {{ word.originalWord }} - {{ word.translation }}
+      </option>
+    </select>
+    <button (click)="addWordToList()" [disabled]="!selectedWordToAdd">Ausgewähltes Wort hinzufügen</button>
+  </div>
+</section>

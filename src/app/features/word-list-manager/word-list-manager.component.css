@@ -1,0 +1,116 @@
+.word-list-manager-section {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.word-list-manager-section h2,
+.word-list-manager-section h3,
+.word-list-manager-section h4 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.list-creation {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.list-creation input {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #333; /* Make font darker */
+}
+
+.list-creation button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.list-selection {
+  margin-bottom: 20px;
+}
+
+.list-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.list-buttons button {
+  padding: 8px 15px;
+  background-color: #e9ecef;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.list-buttons button.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.selected-list-details {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.selected-list-details h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-list-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.selected-list-details li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.selected-list-details li:last-child {
+  border-bottom: none;
+}
+
+.selected-list-details li button {
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.selected-list-details select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.selected-list-details button[disabled] {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

@@ -1,0 +1,11 @@
+<app-header (navigate)="navigateTo($event)"></app-header>
+
+<main id="main-content" role="main">
+    <ng-container *ngIf="currentPage === 'quiz'">
+        <app-quiz></app-quiz>
+        <app-stats></app-stats>
+    </ng-container>
+    <app-manage-vocabulary *ngIf="currentPage === 'manage-vocabulary'"></app-manage-vocabulary>
+</main>
+
+<app-footer></app-footer>

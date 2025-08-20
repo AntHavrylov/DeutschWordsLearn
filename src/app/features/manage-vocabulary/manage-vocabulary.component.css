@@ -1,0 +1,50 @@
+.manage-vocabulary-section {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-width: 1000px; /* Adjust as needed */
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.manage-vocabulary-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.sub-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.sub-navigation button {
+  padding: 8px 15px;
+  background-color: #e9ecef;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sub-navigation button:hover {
+  background-color: #d4d8dc;
+}
+
+.sub-navigation button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.sub-page-content {
+  /* Styles for the container of the sub-components */
+  padding-top: 10px;
+}
