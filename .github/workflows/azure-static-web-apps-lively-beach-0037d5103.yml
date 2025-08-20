@@ -23,33 +23,15 @@ jobs:
           submodules: true
           lfs: false
       
-      # Настройка Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      # Установка зависимостей
-      - name: Install dependencies
-        run: npm ci
-      
-      # Сборка Angular приложения в нужную папку
-      - name: Build Angular app
-        run: |
-          npm run build -- --configuration production --output-path dist/admin4us
-          echo "Build completed. Files in dist/admin4us:"
-          ls -la dist/admin4us/
-      
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_BEACH_0037D5103 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "upload"
           ###### Repository/Build Configurations ######
           app_location: "/" # Исходный код в корне
-          output_location: "dist/admin4us" # Используем то что ожидает Azure
+          output_location: "dist/admin4us" # Папка куда Angular собирается
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
@@ -61,5 +43,5 @@ jobs:
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_BEACH_0037D5103 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "close"
