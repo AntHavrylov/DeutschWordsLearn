@@ -39,12 +39,12 @@ jobs:
         run: |
           npm run build -- --configuration production
           ls -la dist/
-          ls -la dist/admin4us/
+          ls -la dist/wordlearn-angular/
       
       # Копируем файлы в корень для Azure SWA
       - name: Copy built files to root
         run: |
-          cp -r dist/admin4us/* .
+          cp -r dist/wordlearn-angular/* .
           ls -la
       
       - name: Install OIDC Client from Core Package
