@@ -34,24 +34,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      # Сборка Angular приложения
+      # Сборка Angular приложения в нужную папку
       - name: Build Angular app
         run: |
-          npm run build -- --configuration production
-          echo "Build completed. Files in dist/wordlearn-angular:"
-          ls -la dist/wordlearn-angular/
-      
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
-      
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
-        with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
+          npm run build -- --configuration production --output-path dist/admin4us
+          echo "Build completed. Files in dist/admin4us:"
+          ls -la dist/admin4us/
       
       - name: Build And Deploy
         id: builddeploy
@@ -60,12 +48,8 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_BEACH_0037D5103 }}
           action: "upload"
           ###### Repository/Build Configurations ######
-          app_location: "dist/wordlearn-angular" # Папка с собранным приложением
-          api_location: "" # Api source code path - optional
-          output_location: "" # Оставляем пустым
-          github_id_token: ${{ steps.idtoken.outputs.result }}
-          # Отключаем встроенную сборку, так как мы собираем сами
-          skip_app_build: true
+          app_location: "/" # Исходный код в корне
+          output_location: "dist/admin4us" # Используем то что ожидает Azure
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
