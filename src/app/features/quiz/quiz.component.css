@@ -1,6 +1,7 @@
 .quiz-controls {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -13,6 +14,8 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .quiz-list-selection {
@@ -22,5 +25,8 @@
 }
 
 .quiz-list-selection label {
-    line-height: 38px;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.1em;
+    font-weight: bold;
 }
