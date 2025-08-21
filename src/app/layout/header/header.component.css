@@ -46,6 +46,9 @@ nav {
 
 nav button {
     margin-right: 15px; /* More right margin to buttons */
+    background-color: #0000001a;
+    border-color: #ffffff;
+    border: solid 1px;
 }
 
 /* Shrunk styles */

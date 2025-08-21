@@ -3,11 +3,11 @@
     <div class="quiz-controls">
         <label for="quiz-list-select">Wortliste auswählen:</label>
         <div class="quiz-start-row">
-            <select id="quiz-list-select" class="form-control" [(ngModel)]="selectedListId">
+            <select id="quiz-list-select" class="form-select"  [(ngModel)]="selectedListId">
                 <option value="">Alle Wörter</option>
                 <option *ngFor="let list of wordLists" [value]="list.id">{{ list.name }}</option>
             </select>
-            <button id="start-quiz-btn" class="btn btn-primary" (click)="startQuiz()">Starten</button>
+            <button id="start-quiz-btn" class="btn" (click)="startQuiz()">Starten</button>
         </div>
     </div>
 
@@ -75,14 +75,13 @@
                                 [{{ currentWord.kasus }}]
                             </ng-container>
                         </ng-container>
-                        <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
                     </h2>
                     <!-- Options for levels 0-2 (original word shown, guess translation) -->
                     <div class="options">
                         <button *ngFor="let option of currentWord.options" class="option-btn" [class.selected]="selectedOption === option" (click)="selectOption(option)">{{ option }}</button>
                     </div>
                 </ng-template>
-
+                
                 <div class="learn-status">
                     <span>Learn Process:</span>
                     <div class="learn-status-bar">
@@ -90,16 +89,19 @@
                     </div>
                     <span>{{ (currentWord.learnStatus || 0) / MAX_LEARNING_LEVEL * 100 | number:'1.0-0' }}%</span>
                 </div>
-
-                <p class="description" *ngIf="showDescription">{{ currentWord.description }}</p>
-                <button class="toggle-description quiz-toggle-btn" (click)="toggleDescription()">{{ showDescription ? '-' : '+' }}</button>
-
+                
+                <div>
+                    <p class="description" *ngIf="showDescription">{{ currentWord.description }}</p>
+                    <h6><span class="badge bg-secondary" (click)="toggleDescription()">Tip {{ showDescription ? '-' : '+' }}</span></h6>
+                </div>
+                
                 <div class="solution" *ngIf="currentWord.answer === false">
                     Correct Answer: {{ currentWord.correctAnswerDisplay }}
                 </div>
-
+                
                 <div class="quiz-navigation">
-                    <button id="next-btn" class="btn btn-primary" (click)="next()">{{ currentWord.answer === null ? 'Submit Answer' : 'Next Question' }}</button>
+                    <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
+                    <button id="next-btn" class="btn" (click)="next()">{{ currentWord.answer === null ? 'Submit Answer' : 'Next Question' }}</button>
                 </div>
                 <div class="quiz-progress">
                     Question {{ quizService.session.currentIndex + 1 }} of {{ quizService.session.totalQuestions }}

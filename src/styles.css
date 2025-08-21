@@ -1,3 +1,5 @@
+@import '~bootstrap/dist/css/bootstrap.css';
+
 :root {
     --primary-color: #E0FFFF; /* Muted gray-blue for subtle contrast */
     --secondary-color: #fca311; /* Orange */
@@ -161,7 +163,7 @@ main {
 
 .quiz-navigation {
     display: flex; /* Add this */
-    justify-content: flex-end; /* Push content to the right */
+    justify-content: space-between; /* Push content to the right */
     margin-top: var(--spacing-unit); /* Add some space above */
 }
 
@@ -518,9 +520,5 @@ footer {
 
     #word-list-container.grid {
         grid-template-columns: 1fr;
-    }
-
-    button {
-        min-height: 44px;
     }
 }

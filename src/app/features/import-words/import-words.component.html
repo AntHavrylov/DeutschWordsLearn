@@ -2,7 +2,7 @@
   <h2>Wörter aus Google Sheets importieren</h2>
     <div class="form-group">
     <label for="source-select">Importquelle auswählen:</label>
-    <select id="source-select" [(ngModel)]="selectedSourceId">
+    <select id="source-select" class="form-select" [(ngModel)]="selectedSourceId">
       <option value="">-- Quelle auswählen --</option>
       <option *ngFor="let source of sources" [value]="source.id">{{ source.name }}</option>
     </select>
@@ -10,7 +10,7 @@
 
   <div class="form-group">
     <label for="word-list-select">Zu Liste hinzufügen:</label>
-    <select id="word-list-select" [(ngModel)]="selectedListId">
+    <select id="word-list-select" class="form-select" [(ngModel)]="selectedListId">
       <option value="">-- Bestehende Liste auswählen --</option>
       <option *ngFor="let list of wordLists" [value]="list.id">{{ list.name }}</option>
     </select>
