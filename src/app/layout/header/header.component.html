@@ -1,10 +1,10 @@
-<header role="banner">
-    <span id="app-version" class="version-label">v1.0.0-ng</span>
-    <div class="header-content">
+<header role="banner" [class.shrunk]="!isHeaderExpanded">
+    <div class="header-main-row">
         <h1>Smart Lernen</h1>
-        <nav>
-            <button (click)="onNavigate('quiz')">Quiz</button>
-            <button (click)="onNavigate('manage-vocabulary')">Vokabeln verwalten</button>
-        </nav>
+        <span id="app-version" class="version-label">v0.1.0</span>
     </div>
+    <nav>
+        <button class="btn btn-primary" (click)="onNavigate('quiz')">Quiz</button>
+        <button class="btn btn-primary" (click)="onNavigate('manage-vocabulary')">Vokabeln verwalten</button>
+    </nav>
 </header>

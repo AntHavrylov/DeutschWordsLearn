@@ -1,37 +1,67 @@
 header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Align version to the right */
-    padding: 10px 20px;
-    /* background-color: #f0f0f0; */ /* Removed background color */
+    align-items: center;
+    padding: 10px 15px; /* Default padding */
     border-bottom: 1px solid #ccc;
+    transition: all 0.3s ease-in-out;
 }
 
-.header-content {
+.header-main-row {
     display: flex;
-    justify-content: space-between; /* Pushes h1 to left, nav to right */
+    justify-content: space-between;
     align-items: center;
-    width: 100%; /* Takes full width of the header */
+    width: 100%;
 }
 
 h1 {
-    margin: 0; /* Remove default margin */
-    flex-grow: 1; /* Allows h1 to take available space */
+    margin: 0;
+    flex-grow: 1;
     text-align: left;
-}
-
-nav {
-    display: flex; /* Makes buttons inline */
-    gap: 10px; /* Space between buttons */
-}
-
-nav button:nth-child(2) {
-    margin-right: 40px; /* Add margin to the right of the second button */
+    font-size: 2.5em; /* Bigger font size for big header */
+    transition: font-size 0.3s ease-in-out;
 }
 
 #app-version {
-    font-size: 0.8em;
+    font-size: 0.7em;
     color: #666;
-    margin-bottom: 5px; /* Space between version and header content */
-    margin-right: 40px;
+    margin-right: 25px; /* More right margin */
+    /* No font-size transition here, as per requirement */
+}
+
+nav {
+    display: flex;
+    gap: 1px; /* Increased gap between buttons */
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 10px; /* Space below top row */
+    margin-right: 30px;
+    transition: all 0.3s ease-in-out;
+}
+
+nav button {
+    margin-right: 15px; /* More right margin to buttons */
+}
+
+/* Shrunk styles */
+header.shrunk {
+    padding: 5px 15px; /* Adjusted padding for shrunk state */
+    height: 50px; /* Adjusted height for shrunk state */
+    overflow: hidden;
+}
+
+header.shrunk h1 {
+    font-size: 1.8em; /* Label becomes a bit smaller */
+}
+
+/* No header.shrunk #app-version font-size rule, as per requirement */
+
+header.shrunk nav {
+    opacity: 0;
+    height: 0;
+    margin-top: 0;
 }
