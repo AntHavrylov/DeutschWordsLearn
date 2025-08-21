@@ -15,7 +15,12 @@
                 <div>
                     <strong>{{ word.article ? word.article + ' ' : '' }}{{ word.originalWord }}</strong>: {{ word.translation }} <!-- Changed word.word to word.originalWord -->
                     <br>
-                    <small>Learn Status: {{ (word.learnStatus || 0) / 7 * 100 | number:'1.0-0' }}%</small>
+                    <div class="learn-status">
+                        <div class="learn-status-bar">
+                            <div class="learn-status-progress" [style.width.%]="(word.learnStatus || 0) / MAX_LEARNING_LEVEL * 100"></div>
+                        </div>
+                        <span>{{ (word.learnStatus || 0) / MAX_LEARNING_LEVEL * 100 | number:'1.0-0' }}%</span>
+                    </div>
                 </div>
                 <div class="word-item-actions">
                     <button class="learn-btn" (click)="iKnowThisWord(word)">Ich weiß es!</button>

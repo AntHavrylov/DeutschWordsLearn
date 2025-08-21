@@ -4,7 +4,7 @@ import { WordStorageService } from './word-storage.service';
 import { QuizSession, QuizWord, QuizResults } from '../models/quiz.model';
 import { WordListStorageService } from './word-list-storage.service';
 import { WordList } from '../models/word-list.model';
-import { MAX_LEARNING_LEVEL } from '../constants/learning-levels';
+import { MAX_LEARNING_LEVEL, REVERSE_QUIZ_THRESHOLD } from '../constants/learning-levels';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +46,7 @@ export class QuizService {
     const wordsForQuiz = this.shuffleArray(wordsToQuizFrom).slice(0, wordCount);
     this.session = {
       words: wordsForQuiz.map((w: Word) => {
-        const isReverse = (w.learnStatus || 0) >= 2; // Levels 0-2: original word shown, guess translation. Levels 3-7: translation shown, guess original word/parts.
+        const isReverse = (w.learnStatus || 0) >= REVERSE_QUIZ_THRESHOLD; // Levels 0-2: original word shown, guess translation. Levels 3-7: translation shown, guess original word/parts.
         let correctAnswer: string;
         let distractors: string[];
         let options: string[];

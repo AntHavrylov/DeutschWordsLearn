@@ -87,9 +87,9 @@
                 <div class="learn-status">
                     <span>Learn Process:</span>
                     <div class="learn-status-bar">
-                        <div class="learn-status-progress" [style.width.%]="(currentWord.learnStatus || 0) / 7 * 100"></div>
+                        <div class="learn-status-progress" [style.width.%]="(currentWord.learnStatus || 0) / MAX_LEARNING_LEVEL * 100"></div>
                     </div>
-                    <span>{{ (currentWord.learnStatus || 0) / 7 * 100 | number:'1.0-0' }}%</span>
+                    <span>{{ (currentWord.learnStatus || 0) / MAX_LEARNING_LEVEL * 100 | number:'1.0-0' }}%</span>
                 </div>
 
                 <p class="description" *ngIf="showDescription">{{ currentWord.description }}</p>

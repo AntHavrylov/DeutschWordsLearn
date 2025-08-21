@@ -38,7 +38,7 @@ export class AddWordFormComponent implements OnInit {
       const newWord: Word = {
         id: uuidv4(), // Generate a unique ID
         ...this.addWordForm.value,
-        learnStatus: 0
+        learnStatus: MIN_LEARNING_LEVEL
       };
 
       if (this.wordStorageService.addWord(newWord)) {

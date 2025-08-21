@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Word, ArticleType } from '../models/word.model';
-import { MIN_LEARNING_LEVEL } from '../constants/learning-levels';
+import { MIN_LEARNING_LEVEL, MAX_LEARNING_LEVEL } from '../constants/learning-levels';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
@@ -19,7 +19,7 @@ export class WordStorageService {
       return words.map((word: Word) => ({
         ...word,
         id: word.id || uuidv4(), // Assign a new ID if missing
-        learningLevel: word.learningLevel === undefined ? 0 : word.learningLevel
+        learningLevel: word.learningLevel === undefined ? MIN_LEARNING_LEVEL : word.learningLevel
       }));
     } catch (error) {
       console.error("Error getting words:", error);
@@ -47,7 +47,7 @@ export class WordStorageService {
 
       // Initialize learningLevel if not provided
       if (wordObject.learningLevel === undefined) {
-        wordObject.learningLevel = 0;
+        wordObject.learningLevel = MIN_LEARNING_LEVEL;
       }
 
       words.push(wordObject);
@@ -94,7 +94,7 @@ export class WordStorageService {
       if (index !== -1) {
         // Ensure learningLevel is initialized if not provided in the updated object
         if (updatedWordObject.learningLevel === undefined) {
-          updatedWordObject.learningLevel = 0;
+          updatedWordObject.learningLevel = MIN_LEARNING_LEVEL;
         }
         words[index] = updatedWordObject;
         this.saveWordsToLocalStorage(words);
@@ -188,7 +188,7 @@ export class WordStorageService {
         }
         if (!existingWordSet.has(word.originalWord)) {
           if (word.learnStatus === undefined) {
-            word.learnStatus = 0;
+            word.learnStatus = MIN_LEARNING_LEVEL;
           }
           existingWords.push(word);
           existingWordSet.add(word.originalWord);
@@ -239,9 +239,9 @@ export class WordStorageService {
     if (wordIndex > -1) {
       const word = words[wordIndex];
       if (isCorrect) {
-        word.learnStatus = (word.learnStatus || 0) + 1;
+        word.learnStatus = Math.min(MAX_LEARNING_LEVEL, (word.learnStatus || MIN_LEARNING_LEVEL) + 1);
       } else {
-        word.learnStatus = Math.max(0, (word.learnStatus || 0) - 1);
+        word.learnStatus = Math.max(MIN_LEARNING_LEVEL, (word.learnStatus || MIN_LEARNING_LEVEL) - 1);
       }
       this.addOrUpdateWord(word);
     }

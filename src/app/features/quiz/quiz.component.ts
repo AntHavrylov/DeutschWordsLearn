@@ -34,6 +34,7 @@ export class QuizComponent implements OnInit {
   WordType = WordType;
   Kasus = Kasus;
   ArticleType = ArticleType;
+  public readonly MAX_LEARNING_LEVEL = MAX_LEARNING_LEVEL;
 
   constructor(
     public quizService: QuizService,
@@ -55,7 +56,7 @@ export class QuizComponent implements OnInit {
       const wordToUpdate = this.wordStorageService.getWordById(this.currentWord.id);
       if (wordToUpdate) {
         wordToUpdate.learningLevel = MAX_LEARNING_LEVEL;
-        wordToUpdate.learnStatus = 7; // Set learnStatus to 7 (100%)
+        wordToUpdate.learnStatus = MAX_LEARNING_LEVEL; // Set learnStatus to 7 (100%)
         this.wordStorageService.addOrUpdateWord(wordToUpdate);
       }
       this.quizService.nextCard();

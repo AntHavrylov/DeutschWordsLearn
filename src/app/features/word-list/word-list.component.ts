@@ -18,6 +18,7 @@ export class WordListComponent implements OnInit {
   searchTerm = '';
   isVisible = true;
   viewMode: 'list' | 'grid' = 'grid';
+  public readonly MAX_LEARNING_LEVEL = MAX_LEARNING_LEVEL;
 
   constructor(private wordStorageService: WordStorageService) { }
 
@@ -53,7 +54,7 @@ export class WordListComponent implements OnInit {
     if (confirm('Möchten Sie den Lernfortschritt für alle angezeigten Wörter wirklich zurücksetzen?')) {
       this.filteredWords.forEach(word => {
         word.learningLevel = MIN_LEARNING_LEVEL;
-        word.learnStatus = 0;
+        word.learnStatus = MIN_LEARNING_LEVEL;
         this.wordStorageService.addOrUpdateWord(word);
       });
       this.loadWords(); // Refresh the list after updating all words
@@ -62,14 +63,14 @@ export class WordListComponent implements OnInit {
 
   iKnowThisWord(word: Word): void {
     word.learningLevel = MAX_LEARNING_LEVEL;
-    word.learnStatus = 7; // Set learnStatus to 7 (100%)
+    word.learnStatus = MAX_LEARNING_LEVEL;
     this.wordStorageService.addOrUpdateWord(word);
     this.loadWords(); // Refresh the list
   }
 
   resetLearningLevel(word: Word): void {
     word.learningLevel = MIN_LEARNING_LEVEL;
-    word.learnStatus = 0; // Reset learnStatus to 0
+    word.learnStatus = MIN_LEARNING_LEVEL;
     this.wordStorageService.addOrUpdateWord(word);
     this.loadWords(); // Refresh the list
   }
