@@ -5,6 +5,7 @@ import { Word } from '../models/word.model';
 import { GoogleSheetsService } from './google-sheets.service';
 import { WordStorageService } from './word-storage.service';
 import { WordListStorageService } from './word-list-storage.service'; // Added this
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,10 @@ export class WordImportService {
 
         wordsToImport.forEach(word => {
           try {
-            const saved = this.wordStorageService.saveWord(word); // Capture return value
+            if (!word.id) {
+              word.id = uuidv4();
+            }
+            const saved = this.wordStorageService.addOrUpdateWord(word); // Capture return value
             if (saved) {
               importedCount++;
               if (listId) { // If a listId is provided, add word to list

@@ -11,9 +11,13 @@
       <label for="source-url">Quellen-URL (CSV):</label>
       <input type="text" id="source-url" [(ngModel)]="newSourceUrl" placeholder="z.B. https://docs.google.com/sheets/d/e/.../pub?output=csv">
     </div>
-    <button *ngIf="!editingSource" (click)="addSource()" [disabled]="!newSourceName.trim() || !newSourceUrl.trim()">Quelle hinzufügen</button>
+    <div class="form-group">
+      <label for="source-file-link">Dateilink (optional):</label>
+      <input type="text" id="source-file-link" [(ngModel)]="newSourceFileLink" placeholder="z.B. https://example.com/my-document.pdf">
+    </div>
+    <button *ngIf="!editingSource" (click)="addSource()" [disabled]="!newSourceName.trim()">Quelle hinzufügen</button>
     <div *ngIf="editingSource">
-      <button (click)="updateSource()" [disabled]="!newSourceName.trim() || !newSourceUrl.trim()">Quelle aktualisieren</button>
+      <button (click)="updateSource()" [disabled]="!newSourceName.trim()">Quelle aktualisieren</button>
       <button (click)="cancelEdit()">Abbrechen</button>
     </div>
   </div>
@@ -25,6 +29,7 @@
       <li *ngFor="let source of sources">
         <span>{{ source.name }}</span>
         <small>{{ source.url }}</small>
+        <small *ngIf="source.fileLink">Dateilink: <a [href]="source.fileLink" target="_blank">{{ source.fileLink }}</a></small>
         <div class="source-actions">
           <button (click)="editSource(source)">Bearbeiten</button>
           <button (click)="deleteSource(source.id)">Löschen</button>

@@ -4,6 +4,7 @@ import { WordStorageService } from './word-storage.service';
 import { QuizSession, QuizWord, QuizResults } from '../models/quiz.model';
 import { WordListStorageService } from './word-list-storage.service';
 import { WordList } from '../models/word-list.model';
+import { MAX_LEARNING_LEVEL } from '../constants/learning-levels';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,9 @@ export class QuizService {
     } else {
       wordsToQuizFrom = this.wordStorageService.getWords();
     }
+
+    // Filter out words that have reached the maximum learning level
+    wordsToQuizFrom = wordsToQuizFrom.filter(word => (word.learningLevel || 0) < MAX_LEARNING_LEVEL);
 
     // Filter out verbs where kasus is 'None'
     wordsToQuizFrom = wordsToQuizFrom.filter(word => {

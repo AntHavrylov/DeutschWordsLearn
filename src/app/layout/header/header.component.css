@@ -1,0 +1,37 @@
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align version to the right */
+    padding: 10px 20px;
+    /* background-color: #f0f0f0; */ /* Removed background color */
+    border-bottom: 1px solid #ccc;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between; /* Pushes h1 to left, nav to right */
+    align-items: center;
+    width: 100%; /* Takes full width of the header */
+}
+
+h1 {
+    margin: 0; /* Remove default margin */
+    flex-grow: 1; /* Allows h1 to take available space */
+    text-align: left;
+}
+
+nav {
+    display: flex; /* Makes buttons inline */
+    gap: 10px; /* Space between buttons */
+}
+
+nav button:nth-child(2) {
+    margin-right: 40px; /* Add margin to the right of the second button */
+}
+
+#app-version {
+    font-size: 0.8em;
+    color: #666;
+    margin-bottom: 5px; /* Space between version and header content */
+    margin-right: 40px;
+}

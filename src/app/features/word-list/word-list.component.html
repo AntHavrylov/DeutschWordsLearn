@@ -1,11 +1,11 @@
 <section class="word-list-section" aria-labelledby="word-list-heading">
-    <h2 id="word-list-heading">My Words <button (click)="toggleList()">{{ isVisible ? '-' : '+' }}</button></h2>
+    <h2 id="word-list-heading">Meine Wörter <button (click)="toggleList()">{{ isVisible ? '-' : '+' }}</button></h2>
     <div id="word-list-content" *ngIf="isVisible">
         <div class="word-list-controls">
             <label for="search-box" class="sr-only">Search words</label>
             <input type="text" id="search-box" placeholder="Search words..." [(ngModel)]="searchTerm" (ngModelChange)="filterWords()">
             <span id="word-counter" aria-live="polite">{{ filteredWords.length }} word(s)</span>
-            <button id="view-toggle" aria-label="Toggle between grid and list view" (click)="toggleView()">Toggle View</button>
+            <button (click)="resetAllProgress()">Fortschritt zurücksetzen</button>
         </div>
         <div id="word-list-container" [ngClass]="viewMode">
             <div *ngIf="filteredWords.length === 0">
@@ -18,6 +18,8 @@
                     <small>Learn Status: {{ (word.learnStatus || 0) / 7 * 100 | number:'1.0-0' }}%</small>
                 </div>
                 <div class="word-item-actions">
+                    <button class="learn-btn" (click)="iKnowThisWord(word)">Ich weiß es!</button>
+                    <button class="reset-btn" (click)="resetLearningLevel(word)">Zurücksetzen</button>
                     <button class="delete-btn" (click)="deleteWord(word.originalWord)">🗑️</button> <!-- Changed word.word to word.id -->
                 </div>
             </div>

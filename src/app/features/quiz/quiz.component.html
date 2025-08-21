@@ -10,6 +10,9 @@
         </div>
         <button id="start-quiz-btn" (click)="startQuiz()">Neues Quiz starten</button>
     </div>
+
+    <div *ngIf="noWordsMessage" class="error-message">{{ noWordsMessage }}</div>
+
     <div id="cards-container" role="region" aria-live="polite" *ngIf="quizService.session && !results">
         <div class="card" [ngClass]="{'correct': currentWord?.answer === true, 'incorrect': currentWord?.answer === false}">
             <ng-container *ngIf="currentWord">
@@ -95,6 +98,7 @@
                 <div class="quiz-navigation">
                     <button id="next-btn" (click)="next()">{{ currentWord.answer === null ? 'Submit Answer' : 'Next Question' }}</button>
                 </div>
+                <button id="i-know-btn" (click)="iKnowThisWord()">Ich weiß es!</button>
 
                 <div class="quiz-progress">
                     Question {{ quizService.session.currentIndex + 1 }} of {{ quizService.session.totalQuestions }}

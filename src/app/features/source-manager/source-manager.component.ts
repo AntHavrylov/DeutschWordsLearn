@@ -15,6 +15,7 @@ export class SourceManagerComponent implements OnInit {
   sources: Source[] = [];
   newSourceName: string = '';
   newSourceUrl: string = '';
+  newSourceFileLink: string = '';
   editingSource: Source | null = null;
 
   constructor(private sourceStorageService: SourceStorageService) { }
@@ -28,11 +29,12 @@ export class SourceManagerComponent implements OnInit {
   }
 
   addSource(): void {
-    if (this.newSourceName.trim() && this.newSourceUrl.trim()) {
+    if (this.newSourceName.trim()) {
       const newSource: Source = {
         id: '', // Service will generate
         name: this.newSourceName.trim(),
-        url: this.newSourceUrl.trim()
+        url: this.newSourceUrl.trim(),
+        fileLink: this.newSourceFileLink.trim()
       };
       this.sourceStorageService.saveSource(newSource);
       this.newSourceName = '';
@@ -45,12 +47,14 @@ export class SourceManagerComponent implements OnInit {
     this.editingSource = { ...source }; // Create a copy for editing
     this.newSourceName = source.name;
     this.newSourceUrl = source.url;
+    this.newSourceFileLink = source.fileLink || '';
   }
 
   updateSource(): void {
-    if (this.editingSource && this.newSourceName.trim() && this.newSourceUrl.trim()) {
+    if (this.editingSource && this.newSourceName.trim()) {
       this.editingSource.name = this.newSourceName.trim();
       this.editingSource.url = this.newSourceUrl.trim();
+      this.editingSource.fileLink = this.newSourceFileLink.trim();
       this.sourceStorageService.saveSource(this.editingSource);
       this.cancelEdit();
       this.loadSources();
@@ -61,6 +65,7 @@ export class SourceManagerComponent implements OnInit {
     this.editingSource = null;
     this.newSourceName = '';
     this.newSourceUrl = '';
+    this.newSourceFileLink = '';
   }
 
   deleteSource(sourceId: string): void {

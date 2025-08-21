@@ -507,7 +507,8 @@ footer {
     }
 
     .quiz-section { /* Added this block */
-        margin-top: calc(var(--spacing-unit) * 3); /* Increased margin for mobile */
+        margin-top: calc(var(--spacing-unit) * 1); /* Increased margin for mobile */
+        margin-bottom: calc(var(--spacing-unit) * 1);
     }
 
     .word-list-controls {

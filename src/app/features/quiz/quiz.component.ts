@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { QuizService } from '../../core/services/quiz.service';
 import { StatsService } from '../../core/services/stats.service'; // Import StatsService
 import { QuizWord, QuizResults } from '../../core/models/quiz.model';
-import { WordType, Kasus, ArticleType, Preposition } from '../../core/models/word.model'; // Import WordType, Kasus, and ArticleType
+import { WordType, Kasus, ArticleType, Preposition, Word } from '../../core/models/word.model'; // Import WordType, Kasus, and ArticleType
 import { WordListStorageService } from '../../core/services/word-list-storage.service'; // Added this
+import { WordStorageService } from '../../core/services/word-storage.service'; // Import WordStorageService
+import { MAX_LEARNING_LEVEL } from '../../core/constants/learning-levels'; // Import MAX_LEARNING_LEVEL
 import { WordList } from '../../core/models/word-list.model'; // Added this
 import { FormsModule } from '@angular/forms'; // Added FormsModule for select
 
@@ -26,6 +28,7 @@ export class QuizComponent implements OnInit {
 
   wordLists: WordList[] = []; // Added this
   selectedListId: string = ''; // Added this
+  noWordsMessage: string | null = null; // New property for messages
 
   // Expose WordType, Kasus, and ArticleType to the template
   WordType = WordType;
@@ -35,7 +38,8 @@ export class QuizComponent implements OnInit {
   constructor(
     public quizService: QuizService,
     private statsService: StatsService,
-    private wordListStorageService: WordListStorageService // Added this
+    private wordListStorageService: WordListStorageService, // Added this
+    private wordStorageService: WordStorageService // Injected WordStorageService
   ) { }
 
   ngOnInit(): void {
@@ -45,10 +49,27 @@ export class QuizComponent implements OnInit {
     }
   }
 
+  iKnowThisWord(): void {
+    if (this.currentWord) {
+      // Find the actual Word object from wordStorageService to update its learningLevel
+      const wordToUpdate = this.wordStorageService.getWordById(this.currentWord.id);
+      if (wordToUpdate) {
+        wordToUpdate.learningLevel = MAX_LEARNING_LEVEL;
+        wordToUpdate.learnStatus = 7; // Set learnStatus to 7 (100%)
+        this.wordStorageService.addOrUpdateWord(wordToUpdate);
+      }
+      this.quizService.nextCard();
+      this.updateCurrentWord();
+    }
+  }
+
   startQuiz(): void {
+    this.noWordsMessage = null; // Clear previous messages
     if (this.quizService.initializeQuiz(10, this.selectedListId)) { // Pass selectedListId
       this.results = null;
       this.updateCurrentWord();
+    } else {
+      this.noWordsMessage = 'Nicht genügend Wörter für ein Quiz vorhanden (mindestens 4 Wörter erforderlich).';
     }
   }
 

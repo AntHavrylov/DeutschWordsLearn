@@ -57,6 +57,7 @@ export interface Word {
   translation: string;
   wordType: WordType;
   learnStatus?: number;
+  learningLevel?: number;
   article?: ArticleType;
   plural?: string;
   preposition?: Preposition;

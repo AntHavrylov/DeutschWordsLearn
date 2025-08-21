@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Word, ArticleType } from '../models/word.model';
+import { MIN_LEARNING_LEVEL } from '../constants/learning-levels';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +15,23 @@ export class WordStorageService {
     try {
       const localData = localStorage.getItem(this.WORDS_STORAGE_KEY);
       const words = localData ? JSON.parse(localData) : [];
-      return words;
+      // Ensure learningLevel is initialized for existing words
+      return words.map((word: Word) => ({
+        ...word,
+        id: word.id || uuidv4(), // Assign a new ID if missing
+        learningLevel: word.learningLevel === undefined ? 0 : word.learningLevel
+      }));
     } catch (error) {
       console.error("Error getting words:", error);
       return [];
     }
   }
 
-  saveWord(wordObject: Word): boolean {
+  getWordById(id: string): Word | undefined {
+    return this.getWords().find(word => word.id === id);
+  }
+
+  addWord(wordObject: Word): boolean {
     try {
       if (!wordObject || !wordObject.originalWord || !wordObject.translation) {
         throw new Error("Invalid word object");
@@ -30,16 +41,30 @@ export class WordStorageService {
 
       // Check for duplicate originalWord
       if (words.some(word => word.originalWord === wordObject.originalWord)) {
-        console.warn("Duplicate word detected. Skipping update."); // Changed error to warn
-        return true; // Indicate success, but no change was made
+        console.warn("Duplicate word detected. Word with originalWord '" + wordObject.originalWord + "' already exists.");
+        return false; // Indicate failure to add due to duplicate
+      }
+
+      // Initialize learningLevel if not provided
+      if (wordObject.learningLevel === undefined) {
+        wordObject.learningLevel = 0;
       }
 
       words.push(wordObject);
       this.saveWordsToLocalStorage(words);
       return true;
     } catch (error) {
-      console.error("Error saving word:", error);
+      console.error("Error adding word:", error);
       return false;
+    }
+  }
+
+  addOrUpdateWord(wordObject: Word): boolean {
+    const existingWord = this.getWordById(wordObject.id);
+    if (existingWord) {
+      return this.updateWord(wordObject);
+    } else {
+      return this.addWord(wordObject);
     }
   }
 
@@ -59,14 +84,18 @@ export class WordStorageService {
     }
   }
 
-  updateWord(originalWord: string, updatedWordObject: Word): boolean {
+  updateWord(updatedWordObject: Word): boolean {
     try {
       if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {
         throw new Error("Invalid word object");
       }
       let words = this.getWords();
-      const index = words.findIndex(word => word.originalWord === originalWord);
+      const index = words.findIndex(word => word.id === updatedWordObject.id);
       if (index !== -1) {
+        // Ensure learningLevel is initialized if not provided in the updated object
+        if (updatedWordObject.learningLevel === undefined) {
+          updatedWordObject.learningLevel = 0;
+        }
         words[index] = updatedWordObject;
         this.saveWordsToLocalStorage(words);
         return true;
@@ -120,6 +149,10 @@ export class WordStorageService {
         if (word.article === undefined) {
           word.article = ArticleType.None;
         }
+      // Ensure learningLevel property exists, default to MIN_LEARNING_LEVEL if not
+        if (word.learningLevel === undefined) {
+          word.learningLevel = MIN_LEARNING_LEVEL;
+        }
       }
       this.saveWordsToLocalStorage(words);
       return true;
@@ -148,6 +181,10 @@ export class WordStorageService {
         // Ensure article property exists, default to ArticleType.None if not
         if (word.article === undefined) {
           word.article = ArticleType.None;
+        }
+        // Ensure learningLevel property exists, default to MIN_LEARNING_LEVEL if not
+        if (word.learningLevel === undefined) {
+          word.learningLevel = MIN_LEARNING_LEVEL;
         }
         if (!existingWordSet.has(word.originalWord)) {
           if (word.learnStatus === undefined) {
@@ -206,7 +243,7 @@ export class WordStorageService {
       } else {
         word.learnStatus = Math.max(0, (word.learnStatus || 0) - 1);
       }
-      this.saveWordsToLocalStorage(words);
+      this.addOrUpdateWord(word);
     }
   }
 }

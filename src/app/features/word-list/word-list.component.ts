@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Word } from '../../core/models/word.model';
 import { WordStorageService } from '../../core/services/word-storage.service';
+import { MAX_LEARNING_LEVEL, MIN_LEARNING_LEVEL } from '../../core/constants/learning-levels';
 
 @Component({
   selector: 'app-word-list',
@@ -16,7 +17,7 @@ export class WordListComponent implements OnInit {
   filteredWords: Word[] = [];
   searchTerm = '';
   isVisible = true;
-  viewMode: 'list' | 'grid' = 'list';
+  viewMode: 'list' | 'grid' = 'grid';
 
   constructor(private wordStorageService: WordStorageService) { }
 
@@ -48,7 +49,28 @@ export class WordListComponent implements OnInit {
     this.isVisible = !this.isVisible;
   }
 
-  toggleView(): void {
-    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
+  resetAllProgress(): void {
+    if (confirm('Möchten Sie den Lernfortschritt für alle angezeigten Wörter wirklich zurücksetzen?')) {
+      this.filteredWords.forEach(word => {
+        word.learningLevel = MIN_LEARNING_LEVEL;
+        word.learnStatus = 0;
+        this.wordStorageService.addOrUpdateWord(word);
+      });
+      this.loadWords(); // Refresh the list after updating all words
+    }
+  }
+
+  iKnowThisWord(word: Word): void {
+    word.learningLevel = MAX_LEARNING_LEVEL;
+    word.learnStatus = 7; // Set learnStatus to 7 (100%)
+    this.wordStorageService.addOrUpdateWord(word);
+    this.loadWords(); // Refresh the list
+  }
+
+  resetLearningLevel(word: Word): void {
+    word.learningLevel = MIN_LEARNING_LEVEL;
+    word.learnStatus = 0; // Reset learnStatus to 0
+    this.wordStorageService.addOrUpdateWord(word);
+    this.loadWords(); // Refresh the list
   }
 }

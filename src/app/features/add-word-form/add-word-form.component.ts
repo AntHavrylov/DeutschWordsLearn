@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { Word } from '../../core/models/word.model';
 import { WordStorageService } from '../../core/services/word-storage.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-add-word-form',
@@ -35,11 +36,12 @@ export class AddWordFormComponent implements OnInit {
   onSubmit(): void {
     if (this.addWordForm.valid) {
       const newWord: Word = {
+        id: uuidv4(), // Generate a unique ID
         ...this.addWordForm.value,
         learnStatus: 0
       };
 
-      if (this.wordStorageService.saveWord(newWord)) {
+      if (this.wordStorageService.addWord(newWord)) {
         this.showMessage('Word added successfully!', 'success');
         this.addWordForm.reset({ article: '' });
       } else {
