@@ -19,19 +19,7 @@
     font-weight: bold;
 }
 
-.card {
-}
-
-#i-know-btn {
-    padding: 8px 12px;
-    background-color: var(--success-color); /* Use success color from global styles */
-    color: white;
-    border: none;
-    border-radius: var(--border-radius); /* Use global border-radius */
-    cursor: pointer;
-    font-size: 1em;
-    margin-bottom: 10px; /* Add some space below the button */
-}
+.card { }
 
 .error-message {
     background-color: #ffcccb; /* Pastel Red */
@@ -41,10 +29,6 @@
     margin-top: 15px;
     text-align: center;
     font-weight: bold;
-}
-
-.i-know-btn-container {
-    text-align: right;
 }
 
 .quiz-start-row {
@@ -62,5 +46,12 @@
 .quiz-start-row button {
     height: 40px;
     box-sizing: border-box;
+    align-items: center;
+}
+
+.quiz-section .card h2 {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }

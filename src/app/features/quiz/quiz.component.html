@@ -17,8 +17,9 @@
         <div class="card" [ngClass]="{'correct': currentWord?.answer === true, 'incorrect': currentWord?.answer === false}">
             <ng-container *ngIf="currentWord">
                 <div *ngIf="currentWord.isReverse; else standardQuestion">
-                    <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
-                    <h2>{{ currentWord.translation }}</h2>
+                    <h2>{{ currentWord.translation }}
+<button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
+</h2>
 
                     <!-- Guessing for Nouns (Level 3-7) -->
                     <ng-container *ngIf="currentWord.wordType === WordType.Noun">
@@ -55,9 +56,6 @@
                 </div>
 
                 <ng-template #standardQuestion>
-                    <div class="i-know-btn-container">
-                        <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
-                    </div>
                     <h2>
                         <!-- Display article for Noun -->
                         <ng-container *ngIf="currentWord.wordType === WordType.Noun && currentWord.article !== ArticleType.None">
@@ -77,6 +75,7 @@
                                 [{{ currentWord.kasus }}]
                             </ng-container>
                         </ng-container>
+                        <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
                     </h2>
                     <!-- Options for levels 0-2 (original word shown, guess translation) -->
                     <div class="options">
