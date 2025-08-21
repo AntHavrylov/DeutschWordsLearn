@@ -46,3 +46,21 @@
 .i-know-btn-container {
     text-align: right;
 }
+
+.quiz-start-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.quiz-start-row select {
+    flex-grow: 1;
+}
+
+.quiz-start-row select,
+.quiz-start-row button {
+    height: 40px;
+    box-sizing: border-box;
+    align-items: center;
+}

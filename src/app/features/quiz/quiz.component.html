@@ -1,14 +1,14 @@
 <section class="quiz-section" aria-labelledby="quiz-heading">
     <h2 id="quiz-heading">Quiz</h2>
     <div class="quiz-controls">
-        <div class="quiz-list-selection">
-            <label for="quiz-list-select">Wortliste auswählen:</label>
+        <label for="quiz-list-select">Wortliste auswählen:</label>
+        <div class="quiz-start-row">
             <select id="quiz-list-select" class="form-control" [(ngModel)]="selectedListId">
                 <option value="">Alle Wörter</option>
                 <option *ngFor="let list of wordLists" [value]="list.id">{{ list.name }}</option>
             </select>
+            <button id="start-quiz-btn" class="btn btn-primary" (click)="startQuiz()">Starten</button>
         </div>
-        <button id="start-quiz-btn" class="btn btn-primary" (click)="startQuiz()">Neues Quiz starten</button>
     </div>
 
     <div *ngIf="noWordsMessage" class="error-message">{{ noWordsMessage }}</div>
