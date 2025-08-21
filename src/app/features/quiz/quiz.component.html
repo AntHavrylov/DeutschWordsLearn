@@ -18,8 +18,8 @@
             <ng-container *ngIf="currentWord">
                 <div *ngIf="currentWord.isReverse; else standardQuestion">
                     <h2>{{ currentWord.translation }}
-<button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
-</h2>
+                        <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
+                    </h2>
 
                     <!-- Guessing for Nouns (Level 3-7) -->
                     <ng-container *ngIf="currentWord.wordType === WordType.Noun">

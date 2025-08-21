@@ -2,8 +2,8 @@
   <h2>Vokabeln verwalten</h2>
 
   <nav class="sub-navigation">
+    <button (click)="navigateToSubPage('word-list')" [class.active]="currentSubPage === 'word-list'">Alle Wörter</button>
     <button (click)="navigateToSubPage('import-words')" [class.active]="currentSubPage === 'import-words'">Wörter importieren</button>
-    <button (click)="navigateToSubPage('word-list')" [class.active]="currentSubPage === 'word-list'">Wortliste</button>
     <button (click)="navigateToSubPage('manage-lists')" [class.active]="currentSubPage === 'manage-lists'">Listen verwalten</button>
     <button (click)="navigateToSubPage('manage-sources')" [class.active]="currentSubPage === 'manage-sources'">Quellen verwalten</button>
   </nav>

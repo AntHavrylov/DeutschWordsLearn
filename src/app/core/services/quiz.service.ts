@@ -54,14 +54,14 @@ export class QuizService {
 
         if (!isReverse) { // Levels 0-2: original word shown, guess translation
           correctAnswer = w.translation;
-          distractors = this.generateDistractors(correctAnswer, wordsToQuizFrom, 'translation');
+          distractors = this.generateDistractors(w, wordsToQuizFrom, 'translation');
           options = this.shuffleArray([correctAnswer, ...distractors]);
           quizWord = { ...w, answer: null, selected: null, isReverse: isReverse, options: options, correctAnswerDisplay: correctAnswer };
         } else { // Levels 3-7: translation shown, guess original word/parts
           
           
           correctAnswer = w.originalWord;
-          distractors = this.generateDistractors(correctAnswer, wordsToQuizFrom, 'originalWord');
+          distractors = this.generateDistractors(w, wordsToQuizFrom, 'originalWord');
           options = this.shuffleArray([correctAnswer, ...distractors]);
           quizWord = { ...w, answer: null, selected: null, isReverse: isReverse, options: options, correctAnswerDisplay: correctAnswer };
 
@@ -104,9 +104,16 @@ export class QuizService {
     return array;
   }
 
-  private generateDistractors(correctAnswer: string, wordPool: Word[], type: 'originalWord' | 'translation'): string[] {
+  private generateDistractors(correctWord: Word, wordPool: Word[], type: 'originalWord' | 'translation'): string[] {
     const distractors: string[] = [];
-    const pool = this.shuffleArray(wordPool.filter((w: Word) => w[type] !== correctAnswer));
+    const pool = this.shuffleArray(wordPool.filter((w: Word) => {
+      if (w[type] === correctWord[type]) return false;
+      if (w.wordType !== correctWord.wordType) return false;
+      if (w.wordType === WordType.Verb && w.reflexive) {
+        return w.reflexive;
+      }
+      return true;
+    }));
     while (distractors.length < 3 && pool.length > 0) {
         const distractor = pool.pop();
         if(distractor) {

@@ -1,13 +1,11 @@
 <section class="import-words-section">
   <h2>Wörter aus Google Sheets importieren</h2>
-
     <div class="form-group">
     <label for="source-select">Importquelle auswählen:</label>
     <select id="source-select" [(ngModel)]="selectedSourceId">
       <option value="">-- Quelle auswählen --</option>
       <option *ngFor="let source of sources" [value]="source.id">{{ source.name }}</option>
     </select>
-    <small><a href="#" (click)="$event.preventDefault(); navigateToSourceManager()">Quellen verwalten</a></small>
   </div>
 
   <div class="form-group">
