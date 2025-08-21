@@ -14,21 +14,26 @@ export class HeaderComponent {
   isHeaderExpanded: boolean = true;
   private lastScrollTop: number = 0;
   private SCROLL_THRESHOLD = 50; // Pixels to scroll before shrinking/expanding
+  private scrollTimeout: any;
 
   @HostListener('window:scroll', ['$event'])
   
   onWindowScroll() {
-    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (currentScrollTop > this.lastScrollTop && currentScrollTop > this.SCROLL_THRESHOLD) {
-      // Scrolling down and past threshold
-      this.isHeaderExpanded = false;
-    } else if (currentScrollTop < this.lastScrollTop || currentScrollTop <= this.SCROLL_THRESHOLD) {
-      // Scrolling up or near the top
-      this.isHeaderExpanded = true;
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
     }
 
-    this.lastScrollTop = currentScrollTop;
+    this.scrollTimeout = setTimeout(() => {
+      const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (currentScrollTop <= this.SCROLL_THRESHOLD) {
+        this.isHeaderExpanded = true;
+      } else {
+        this.isHeaderExpanded = false;
+      }
+
+      this.lastScrollTop = currentScrollTop;
+    }, 100); // 100ms debounce time
   }
 
   onNavigate(page: string): void {
