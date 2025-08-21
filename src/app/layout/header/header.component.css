@@ -8,7 +8,7 @@ header {
     align-items: center;
     padding: 10px 15px; /* Default padding */
     border-bottom: 1px solid #ccc;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.1s ease-in-out;
 }
 
 .header-main-row {
@@ -23,7 +23,7 @@ h1 {
     flex-grow: 1;
     text-align: left;
     font-size: 2.5em; /* Bigger font size for big header */
-    transition: font-size 0.3s ease-in-out;
+    transition: font-size 0.1s ease-in-out;
 }
 
 #app-version {
@@ -40,7 +40,8 @@ nav {
     width: 100%;
     margin-top: 10px; /* Space below top row */
     margin-right: 30px;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    transform: translateY(0);
 }
 
 nav button {
@@ -64,4 +65,5 @@ header.shrunk nav {
     opacity: 0;
     height: 0;
     margin-top: 0;
+    transform: translateY(-100%);
 }

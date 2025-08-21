@@ -16,6 +16,7 @@ export class HeaderComponent {
   private SCROLL_THRESHOLD = 50; // Pixels to scroll before shrinking/expanding
 
   @HostListener('window:scroll', ['$event'])
+  
   onWindowScroll() {
     const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
