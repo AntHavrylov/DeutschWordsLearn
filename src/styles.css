@@ -136,6 +136,7 @@ main {
 }
 
 .form-section, .quiz-section, .word-list-section, .stats-section {
+    color: var(--text-color);
     background: var(--card-background); /* Transparent background */
     backdrop-filter: blur(10px); /* Blur effect */
     border: 1px solid var(--border-color); /* Subtle border */
