@@ -17,12 +17,12 @@
     vertical-align: middle;
     font-size: 1.1em;
     font-weight: bold;
-    color: #879099; /* Dark gray for better visibility */
+    color: var(--text-color-gray); /* Dark gray for better visibility */
 }
 
 .card 
 {
-    background-color: #d4d4d42a;
+    background-color: var(--card-background-color-quiz);
     backdrop-filter: blur(9px);
  }
 
@@ -34,8 +34,8 @@
  }
 
 .error-message {
-    background-color: #ffcccb; /* Pastel Red */
-    color: #a00000; /* Darker red for text for readability */
+    background-color: var(--error-background-color); /* Pastel Red */
+    color: var(--error-text-color); /* Darker red for text for readability */
     padding: 10px;
     border-radius: 5px;
     margin-top: 15px;
@@ -78,8 +78,8 @@
 
 button {
     font-weight: 600;
-    background-color: #6b77633b;
-    border-color: #ffffff;
+    background-color: var(--button-background-color-quiz);
+    border-color: var(--text-color-light);
     border: solid 1px;
-    color: #ffffff;
+    color: var(--text-color-light);
 }

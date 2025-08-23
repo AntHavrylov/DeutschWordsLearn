@@ -1,17 +1,17 @@
 .manage-vocabulary-section {
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   max-width: 1000px; /* Adjust as needed */
   margin: 20px auto;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: var(--background-color-light);
+  color: var(--text-color-dark);
 }
 
 .manage-vocabulary-section h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
+  color: var(--text-color-dark);
 }
 
 .sub-navigation {
@@ -20,28 +20,28 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color-extra-light);
   padding-bottom: 10px;
 }
 
 .sub-navigation button {
   padding: 8px 15px;
-  background-color: #e9ecef;
-  color: #333;
-  border: 1px solid #ddd;
+  background-color: var(--background-color-light-gray);
+  color: var(--text-color-dark);
+  border: 1px solid var(--border-color-medium);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .sub-navigation button:hover {
-  background-color: #d4d8dc;
+  background-color: var(--background-color-hover);
 }
 
 .sub-navigation button.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: var(--primary-action-color);
+  color: var(--text-color-light);
+  border-color: var(--primary-action-color);
 }
 
 .sub-page-content {

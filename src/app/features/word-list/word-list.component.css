@@ -1,13 +1,13 @@
 #word-list-heading {
-    color: #333; /* Dark grey */
+    color: var(--text-color-dark); /* Dark grey */
 }
 
 .word-list-section {
-    color: #555;
+    color: var(--text-color-medium);
 }
 
 #search-box {
-    background-color: #e0e0e0; /* Darker color for input window */
-    border: 1px solid #b0b0b0;
-    color: #333;
+    background-color: var(--background-color-dark-gray); /* Darker color for input window */
+    border: 1px solid var(--border-color-dark);
+    color: var(--text-color-dark);
 }

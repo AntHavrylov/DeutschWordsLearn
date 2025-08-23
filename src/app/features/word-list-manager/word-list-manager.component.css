@@ -1,17 +1,17 @@
 .word-list-manager-section {
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   max-width: 800px;
   margin: 20px auto;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: var(--background-color-light);
+  color: var(--text-color-dark);
 }
 
 .word-list-manager-section h2,
 .word-list-manager-section h3,
 .word-list-manager-section h4 {
-  color: #333;
+  color: var(--text-color-dark);
   margin-bottom: 15px;
 }
 
@@ -24,15 +24,15 @@
 .list-creation input {
   flex-grow: 1;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color-medium);
   border-radius: 4px;
-  color: #333; /* Make font darker */
+  color: var(--text-color-dark); /* Make font darker */
 }
 
 .list-creation button {
   padding: 8px 15px;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary-action-color);
+  color: var(--text-color-light);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -50,21 +50,21 @@
 
 .list-buttons button {
   padding: 8px 15px;
-  background-color: #e9ecef;
-  color: #333;
-  border: 1px solid #ddd;
+  background-color: var(--background-color-light-gray);
+  color: var(--text-color-dark);
+  border: 1px solid var(--border-color-medium);
   border-radius: 4px;
   cursor: pointer;
 }
 
 .list-buttons button.selected {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: var(--primary-action-color);
+  color: var(--text-color-light);
+  border-color: var(--primary-action-color);
 }
 
 .selected-list-details {
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color-extra-light);
   padding-top: 20px;
   margin-top: 20px;
 }
@@ -85,7 +85,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px dashed #eee;
+  border-bottom: 1px dashed var(--border-color-extra-light);
 }
 
 .selected-list-details li:last-child {
@@ -93,8 +93,8 @@
 }
 
 .selected-list-details li button {
-  background-color: #dc3545;
-  color: white;
+  background-color: var(--danger-color);
+  color: var(--text-color-light);
   padding: 5px 10px;
   border: none;
   border-radius: 4px;
@@ -105,12 +105,12 @@
 .selected-list-details select {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color-medium);
   border-radius: 4px;
   margin-bottom: 10px;
 }
 
 .selected-list-details button[disabled] {
-  background-color: #cccccc;
+  background-color: var(--background-color-disabled);
   cursor: not-allowed;
 }

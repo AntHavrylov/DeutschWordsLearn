@@ -7,7 +7,7 @@ header {
     flex-direction: column;
     align-items: center;
     padding: 10px 15px; /* Default padding */
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--border-color-light);
     transition: all 0.1s ease-in-out;
 }
 
@@ -28,7 +28,7 @@ h1 {
 
 #app-version {
     font-size: 0.7em;
-    color: #666;
+    color: var(--text-color-dark-gray);
     margin-right: 25px; /* More right margin */
     /* No font-size transition here, as per requirement */
 }
@@ -46,8 +46,8 @@ nav {
 
 nav button {
     margin-right: 15px; /* More right margin to buttons */
-    background-color: #0000001a;
-    border-color: #ffffff;
+    background-color: var(--button-background-color-header);
+    border-color: var(--text-color-light);
     border: solid 1px;
 }
 
