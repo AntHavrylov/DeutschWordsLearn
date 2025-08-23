@@ -243,6 +243,7 @@ export class WordStorageService {
       } else {
         word.learnStatus = Math.max(MIN_LEARNING_LEVEL, (word.learnStatus || MIN_LEARNING_LEVEL) - 1);
       }
+      word.learningLevel = word.learnStatus;
       this.addOrUpdateWord(word);
     }
   }
