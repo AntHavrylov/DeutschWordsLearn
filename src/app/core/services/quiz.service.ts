@@ -106,7 +106,7 @@ export class QuizService {
 
   private generateDistractors(correctWord: Word, wordPool: Word[], type: 'originalWord' | 'translation'): string[] {
     const distractors: string[] = [];
-    const pool = this.shuffleArray(wordPool.filter((w: Word) => {
+    let pool = this.shuffleArray(wordPool.filter((w: Word) => {
       if (w[type] === correctWord[type]) return false;
       if (w.wordType !== correctWord.wordType) return false;
       if (w.wordType === WordType.Verb && w.reflexive) {
@@ -114,11 +114,22 @@ export class QuizService {
       }
       return true;
     }));
+
     while (distractors.length < 3 && pool.length > 0) {
+      const distractor = pool.pop();
+      if (distractor) {
+        distractors.push(distractor[type]);
+      }
+    }
+
+    if (distractors.length < 3) {
+      pool = this.shuffleArray(wordPool.filter((w: Word) => w[type] !== correctWord[type] && !distractors.includes(w[type])));
+      while (distractors.length < 3 && pool.length > 0) {
         const distractor = pool.pop();
-        if(distractor) {
-            distractors.push(distractor[type]);
+        if (distractor) {
+          distractors.push(distractor[type]);
         }
+      }
     }
     return distractors;
   }
