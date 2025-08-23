@@ -1,5 +1,6 @@
 <section class="word-list-section" aria-labelledby="word-list-heading">
     <h2 id="word-list-heading">Meine Wörter <button (click)="toggleList()">{{ isVisible ? '-' : '+' }}</button></h2>
+    <p>This is the list of all the words you have added.</p>
     <div id="word-list-content" *ngIf="isVisible">
         <div class="word-list-controls">
             <label for="search-box" class="sr-only">Search words</label>

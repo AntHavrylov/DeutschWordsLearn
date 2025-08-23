@@ -2,6 +2,10 @@
     color: #333; /* Dark grey */
 }
 
+.word-list-section {
+    color: #555;
+}
+
 #search-box {
     background-color: #e0e0e0; /* Darker color for input window */
     border: 1px solid #b0b0b0;
