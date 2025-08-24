@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Word, ArticleType } from '../models/word.model';
+import { Word, ArticleType, Kasus } from '../models/word.model';
 import { MIN_LEARNING_LEVEL, MAX_LEARNING_LEVEL } from '../constants/learning-levels';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,7 +19,10 @@ export class WordStorageService {
       return words.map((word: Word) => ({
         ...word,
         id: word.id || uuidv4(), // Assign a new ID if missing
-        learningLevel: word.learningLevel === undefined ? MIN_LEARNING_LEVEL : word.learningLevel
+        learningLevel: word.learningLevel === undefined ? MIN_LEARNING_LEVEL : word.learningLevel,
+        article: word.article === ArticleType.None ? undefined : word.article,
+        preposition: word.preposition || undefined,
+        kasus: word.kasus === Kasus.None ? undefined : word.kasus
       }));
     } catch (error) {
       console.error("Error getting words:", error);
@@ -38,12 +41,6 @@ export class WordStorageService {
       }
 
       const words = this.getWords();
-
-      // Check for duplicate originalWord
-      if (words.some(word => word.originalWord === wordObject.originalWord)) {
-        console.warn("Duplicate word detected. Word with originalWord '" + wordObject.originalWord + "' already exists.");
-        return false; // Indicate failure to add due to duplicate
-      }
 
       // Initialize learningLevel if not provided
       if (wordObject.learningLevel === undefined) {
@@ -149,9 +146,11 @@ export class WordStorageService {
         if (word.article === undefined) {
           word.article = ArticleType.None;
         }
-      // Ensure learningLevel property exists, default to MIN_LEARNING_LEVEL if not
         if (word.learningLevel === undefined) {
           word.learningLevel = MIN_LEARNING_LEVEL;
+        }
+        if (word.kasus === undefined) {
+          word.kasus = Kasus.None;
         }
       }
       this.saveWordsToLocalStorage(words);
@@ -185,6 +184,9 @@ export class WordStorageService {
         // Ensure learningLevel property exists, default to MIN_LEARNING_LEVEL if not
         if (word.learningLevel === undefined) {
           word.learningLevel = MIN_LEARNING_LEVEL;
+        }
+        if (word.kasus === undefined) {
+          word.kasus = Kasus.None;
         }
         if (!existingWordSet.has(word.originalWord)) {
           if (word.learnStatus === undefined) {
