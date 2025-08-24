@@ -83,7 +83,7 @@ export class QuizService {
             }
           }
         }
-        console.log('Quiz Word:', quizWord); // Add this line
+        //console.log('Quiz Word:', quizWord); // Add this line
         return quizWord;
       }),
       currentIndex: 0,

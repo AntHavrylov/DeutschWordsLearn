@@ -19,7 +19,7 @@ import { SourceManagerComponent } from '../source-manager/source-manager.compone
   styleUrls: ['./manage-vocabulary.component.css']
 })
 export class ManageVocabularyComponent {
-  currentSubPage: string = 'import-words'; // Default sub-page
+  currentSubPage: string = 'word-list-manager'; // Default sub-page
 
   navigateToSubPage(subPage: string): void {
     this.currentSubPage = subPage;

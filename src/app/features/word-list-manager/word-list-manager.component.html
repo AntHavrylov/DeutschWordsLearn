@@ -13,7 +13,7 @@
       <button *ngFor="let list of wordLists"
               [class.selected]="selectedList && selectedList.id === list.id"
               (click)="selectList(list)">
-        {{ list.name }}
+        {{ list.name }} ({{ getWordCountForList(list.id) }})
       </button>
     </div>
   </div>
@@ -24,12 +24,30 @@
 
     <h4>Wörter in dieser Liste:</h4>
     <div *ngIf="wordsInSelectedList.length === 0">Noch keine Wörter in dieser Liste.</div>
-    <ul>
-      <li *ngFor="let word of wordsInSelectedList">
-        {{ word.originalWord }} - {{ word.translation }}
-        <button (click)="removeWordFromList(word.originalWord)">Entfernen</button>
-      </li>
-    </ul>
+    <div id="word-list-container">
+      <div *ngIf="wordsInSelectedList.length === 0">
+        <p>Noch keine Wörter in dieser Liste.</p>
+      </div>
+      <div *ngFor="let word of wordsInSelectedList" class="word-item">
+        <div>
+          <strong>{{ word.article && word.article !== 'None' ? word.article + ' ' : '' }}{{ word.reflexive ? 'sich ' : '' }}{{ word.originalWord }}<small *ngIf="word.preposition"> ({{ word.preposition }})</small><small *ngIf="word.kasus && word.kasus !== 'None'"> ({{ word.kasus }})</small></strong>: {{ word.translation }}
+          <br>
+          <small *ngIf="word.description">{{ word.description }}</small>
+          <br>
+          <div class="learn-status">
+              <div class="learn-status-bar">
+                  <div class="learn-status-progress" [style.width.%]="(word.learnStatus || 0) / MAX_LEARNING_LEVEL * 100"></div>
+              </div>
+              <span>{{ (word.learnStatus || 0) / MAX_LEARNING_LEVEL * 100 | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+        <div class="word-item-actions">
+          <button class="learn-btn" (click)="iKnowThisWord(word)">Ich weiß es!</button>
+          <button class="reset-btn" (click)="resetLearningLevel(word)">Zurücksetzen</button>
+          <button class="delete-btn" (click)="deleteWord(word.id)">🗑️</button>
+        </div>
+      </div>
+    </div>
 
     <h4>Wörter zur Liste hinzufügen:</h4>
     <div *ngIf="availableWordsToAdd.length === 0">Keine weiteren Wörter zum Hinzufügen.</div>

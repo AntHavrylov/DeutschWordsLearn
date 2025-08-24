@@ -6,6 +6,7 @@ import { WordList } from '../../core/models/word-list.model';
 import { WordStorageService } from '../../core/services/word-storage.service';
 import { Word } from '../../core/models/word.model';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_LEARNING_LEVEL, MIN_LEARNING_LEVEL } from '../../core/constants/learning-levels';
 
 @Component({
   selector: 'app-word-list-manager',
@@ -22,6 +23,7 @@ export class WordListManagerComponent implements OnInit {
   wordsInSelectedList: Word[] = [];
   availableWordsToAdd: Word[] = [];
   selectedWordToAdd: string = ''; // Stores word originalWord
+  public readonly MAX_LEARNING_LEVEL = MAX_LEARNING_LEVEL;
 
   constructor(
     private wordListStorageService: WordListStorageService,
@@ -93,7 +95,7 @@ export class WordListManagerComponent implements OnInit {
     }
   }
 
-  removeWordFromList(originalWord: string): void {
+  removeWordFromListOnly(originalWord: string): void {
     if (this.selectedList && confirm('Are you sure you want to remove this word from the list?')) {
       const wordToUpdate = this.allWords.find(word => word.originalWord === originalWord);
       if (wordToUpdate) {
@@ -105,6 +107,36 @@ export class WordListManagerComponent implements OnInit {
     }
   }
 
+  deleteWord(wordId: string): void {
+    if (confirm(`Are you sure you want to delete this word permanently?`)) {
+      this.wordStorageService.deleteWordById(wordId);
+      this.loadAllWords(); // Refresh all words
+      if (this.selectedList) {
+        this.selectList(this.selectedList); // Re-select list to refresh display
+      }
+    }
+  }
+
+  iKnowThisWord(word: Word): void {
+    word.learningLevel = MAX_LEARNING_LEVEL;
+    word.learnStatus = MAX_LEARNING_LEVEL;
+    this.wordStorageService.addOrUpdateWord(word);
+    this.loadAllWords(); // Refresh the list
+    if (this.selectedList) {
+      this.selectList(this.selectedList); // Re-select list to refresh display
+    }
+  }
+
+  resetLearningLevel(word: Word): void {
+    word.learningLevel = MIN_LEARNING_LEVEL;
+    word.learnStatus = MIN_LEARNING_LEVEL;
+    this.wordStorageService.addOrUpdateWord(word);
+    this.loadAllWords(); // Refresh the list
+    if (this.selectedList) {
+      this.selectList(this.selectedList); // Re-select list to refresh display
+    }
+  }
+
   updateAvailableWordsToAdd(): void {
     if (this.selectedList) {
       this.availableWordsToAdd = this.allWords.filter(word =>
@@ -113,5 +145,9 @@ export class WordListManagerComponent implements OnInit {
     } else {
       this.availableWordsToAdd = [];
     }
+  }
+
+  getWordCountForList(listId: string): number {
+    return this.allWords.filter(word => word.listId === listId).length;
   }
 }

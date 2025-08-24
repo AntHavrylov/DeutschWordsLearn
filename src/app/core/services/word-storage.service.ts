@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Word, ArticleType, Kasus } from '../models/word.model';
+import { Word, ArticleType, Kasus, WordType } from '../models/word.model';
 import { MIN_LEARNING_LEVEL, MAX_LEARNING_LEVEL } from '../constants/learning-levels';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -34,6 +34,24 @@ export class WordStorageService {
     return this.getWords().find(word => word.id === id);
   }
 
+  private generateWordKey(word: Word): string {
+    let key = word.originalWord.toLowerCase();
+
+    switch (word.wordType) {
+      case WordType.Verb:
+        key += `_reflexive:${word.reflexive || false}`;
+        key += `_preposition:${(word.preposition || '').toLowerCase()}`;
+        break;
+      case WordType.Noun:
+        key = `${(word.article || '').toLowerCase()}_${key}`;
+        break;
+      default:
+        // For other types, originalWord is sufficient
+        break;
+    }
+    return key;
+  }
+
   addWord(wordObject: Word): boolean {
     try {
       if (!wordObject || !wordObject.originalWord || !wordObject.translation) {
@@ -41,6 +59,14 @@ export class WordStorageService {
       }
 
       const words = this.getWords();
+      const newWordKey = this.generateWordKey(wordObject);
+
+      // Check for duplicates
+      const isDuplicate = words.some(existingWord => this.generateWordKey(existingWord) === newWordKey);
+      if (isDuplicate) {
+        console.warn(`Duplicate word detected: ${wordObject.originalWord}. Not adding.`);
+        return false;
+      }
 
       // Initialize learningLevel if not provided
       if (wordObject.learningLevel === undefined) {
@@ -62,6 +88,40 @@ export class WordStorageService {
       return this.updateWord(wordObject);
     } else {
       return this.addWord(wordObject);
+    }
+  }
+
+  updateWord(updatedWordObject: Word): boolean {
+    try {
+      if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {
+        throw new Error("Invalid word object");
+      }
+      let words = this.getWords();
+      const index = words.findIndex(word => word.id === updatedWordObject.id);
+      if (index !== -1) {
+        const updatedWordKey = this.generateWordKey(updatedWordObject);
+
+        // Check for duplicates against other words (excluding itself)
+        const isDuplicate = words.some(existingWord =>
+          existingWord.id !== updatedWordObject.id && this.generateWordKey(existingWord) === updatedWordKey
+        );
+        if (isDuplicate) {
+          console.warn(`Update would create a duplicate word: ${updatedWordObject.originalWord}. Not updating.`);
+          return false;
+        }
+
+        // Ensure learningLevel is initialized if not provided in the updated object
+        if (updatedWordObject.learningLevel === undefined) {
+          updatedWordObject.learningLevel = MIN_LEARNING_LEVEL;
+        }
+        words[index] = updatedWordObject;
+        this.saveWordsToLocalStorage(words);
+        return true;
+      }
+      return false; // Word not found
+    } catch (error) {
+      console.error("Error updating word:", error);
+      return false;
     }
   }
 
@@ -93,29 +153,6 @@ export class WordStorageService {
       return false; // Word not found
     } catch (error) {
       console.error("Error deleting word by ID:", error);
-      return false;
-    }
-  }
-
-  updateWord(updatedWordObject: Word): boolean {
-    try {
-      if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {
-        throw new Error("Invalid word object");
-      }
-      let words = this.getWords();
-      const index = words.findIndex(word => word.id === updatedWordObject.id);
-      if (index !== -1) {
-        // Ensure learningLevel is initialized if not provided in the updated object
-        if (updatedWordObject.learningLevel === undefined) {
-          updatedWordObject.learningLevel = MIN_LEARNING_LEVEL;
-        }
-        words[index] = updatedWordObject;
-        this.saveWordsToLocalStorage(words);
-        return true;
-      }
-      return false; // Word not found
-    } catch (error) {
-      console.error("Error updating word:", error);
       return false;
     }
   }
