@@ -65,4 +65,5 @@ export interface Word {
   reflexive?: boolean;
   description?: string;
   sources?: string[];
+  listId: string; // Added to link word to a WordList
 }

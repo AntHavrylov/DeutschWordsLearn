@@ -22,7 +22,7 @@ export class QuizService {
     if (listId) {
       const selectedList = this.wordListStorageService.getWordLists().find((list: WordList) => list.id === listId);
       if (selectedList) {
-        wordsToQuizFrom = this.wordStorageService.getWords().filter((word: Word) => selectedList.wordIds.includes(word.originalWord)); 
+        wordsToQuizFrom = this.wordStorageService.getWords().filter((word: Word) => word.listId === listId); 
       } else {
         console.warn(`Word list with ID ${listId} not found. Using all words for quiz.`);
         wordsToQuizFrom = this.wordStorageService.getWords();

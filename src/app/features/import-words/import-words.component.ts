@@ -58,7 +58,6 @@ export class ImportWordsComponent implements OnInit {
       const newList: WordList = {
         id: '', // Service will generate
         name: this.newListName.trim(),
-        wordIds: []
       };
       this.wordListStorageService.saveWordList(newList);
       this.newListName = '';

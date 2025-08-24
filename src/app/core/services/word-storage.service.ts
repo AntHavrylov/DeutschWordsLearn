@@ -81,6 +81,22 @@ export class WordStorageService {
     }
   }
 
+  deleteWordById(id: string): boolean {
+    try {
+      let words = this.getWords();
+      const initialLength = words.length;
+      words = words.filter(word => word.id !== id);
+      if (words.length < initialLength) {
+        this.saveWordsToLocalStorage(words);
+        return true;
+      }
+      return false; // Word not found
+    } catch (error) {
+      console.error("Error deleting word by ID:", error);
+      return false;
+    }
+  }
+
   updateWord(updatedWordObject: Word): boolean {
     try {
       if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {

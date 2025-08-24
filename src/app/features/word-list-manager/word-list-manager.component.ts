@@ -54,7 +54,6 @@ export class WordListManagerComponent implements OnInit {
       const newList: WordList = {
         id: uuidv4(),
         name: this.newListName.trim(),
-        wordIds: []
       };
       this.wordListStorageService.saveWordList(newList);
       this.newListName = '';
@@ -66,7 +65,7 @@ export class WordListManagerComponent implements OnInit {
   selectList(list: WordList): void {
     this.selectedList = list;
     this.wordsInSelectedList = this.allWords.filter(word =>
-      list.wordIds.includes(word.originalWord) // Changed word.id to word.originalWord
+      word.listId === list.id
     );
     this.updateAvailableWordsToAdd();
   }
@@ -77,28 +76,39 @@ export class WordListManagerComponent implements OnInit {
       this.selectedList = null;
       this.wordsInSelectedList = [];
       this.loadWordLists();
+      this.loadAllWords(); // Reload all words to reflect changes after list deletion
     }
   }
 
   addWordToList(): void {
     if (this.selectedList && this.selectedWordToAdd) {
-      this.wordListStorageService.addWordToWordList(this.selectedList.id, this.selectedWordToAdd); // selectedWordToAdd is already originalWord
-      this.selectedWordToAdd = '';
-      this.loadWordLists();
+      const wordToUpdate = this.allWords.find(word => word.originalWord === this.selectedWordToAdd);
+      if (wordToUpdate && this.selectedList) {
+        wordToUpdate.listId = this.selectedList.id;
+        this.wordStorageService.addOrUpdateWord(wordToUpdate);
+        this.selectedWordToAdd = ''; // Clear selection
+        this.loadAllWords(); // Reload all words to update available words and words in list
+        this.selectList(this.selectedList); // Re-select list to refresh display
+      }
     }
   }
 
-  removeWordFromList(originalWord: string): void { // Changed wordId to originalWord
+  removeWordFromList(originalWord: string): void {
     if (this.selectedList && confirm('Are you sure you want to remove this word from the list?')) {
-      this.wordListStorageService.removeWordFromWordList(this.selectedList.id, originalWord); // Changed wordId to originalWord
-      this.loadWordLists();
+      const wordToUpdate = this.allWords.find(word => word.originalWord === originalWord);
+      if (wordToUpdate) {
+        wordToUpdate.listId = ''; // Set to empty string to indicate no list
+        this.wordStorageService.addOrUpdateWord(wordToUpdate);
+        this.loadAllWords(); // Reload all words to update available words and words in list
+        this.selectList(this.selectedList); // Re-select list to refresh display
+      }
     }
   }
 
   updateAvailableWordsToAdd(): void {
     if (this.selectedList) {
       this.availableWordsToAdd = this.allWords.filter(word =>
-        !this.selectedList!.wordIds.includes(word.originalWord) // Changed word.id to word.originalWord
+        word.listId !== this.selectedList!.id
       );
     } else {
       this.availableWordsToAdd = [];

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { WordList } from '../models/word-list.model';
+import { WordStorageService } from './word-storage.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Word } from '../models/word.model'; // Import Word model
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class WordListStorageService {
   private readonly WORD_LISTS_STORAGE_KEY = 'wordLists';
 
-  constructor() { }
+  constructor(private wordStorageService: WordStorageService) { }
 
   getWordLists(): WordList[] {
     try {
@@ -20,7 +22,6 @@ export class WordListStorageService {
         const defaultList: WordList = {
           id: uuidv4(), // Use a fixed ID for the default list
           name: 'Meine erste Liste',
-          wordIds: []
         };
         wordLists.push(defaultList);
         this.saveWordListsToLocalStorage(wordLists); // Save the default list
@@ -64,6 +65,13 @@ export class WordListStorageService {
         return false;
       }
 
+      // Delete all words associated with this list
+      const allWords = this.wordStorageService.getWords();
+      const wordsToDelete = allWords.filter((word: Word) => word.listId === listId);
+      wordsToDelete.forEach((word: Word) => {
+        this.wordStorageService.deleteWordById(word.id);
+      });
+
       const initialLength = wordLists.length;
       wordLists = wordLists.filter(list => list.id !== listId);
 
@@ -76,41 +84,6 @@ export class WordListStorageService {
       return false;
     } catch (error) {
       console.error("Fehler beim Löschen der Wortliste:", error);
-      return false;
-    }
-  }
-
-  addWordToWordList(listId: string, originalWord: string): boolean {
-    try {
-      const wordLists = this.getWordLists();
-      const list = wordLists.find(l => l.id === listId);
-      if (list && !list.wordIds.includes(originalWord)) {
-        list.wordIds.push(originalWord);
-        this.saveWordListsToLocalStorage(wordLists);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Fehler beim Hinzufügen von Wörtern zur Liste:", error);
-      return false;
-    }
-  }
-
-  removeWordFromWordList(listId: string, originalWord: string): boolean {
-    try {
-      const wordLists = this.getWordLists();
-      const list = wordLists.find(l => l.id === listId);
-      if (list) {
-        const initialLength = list.wordIds.length;
-        list.wordIds = list.wordIds.filter(word => word !== originalWord);
-        if (list.wordIds.length < initialLength) {
-          this.saveWordListsToLocalStorage(wordLists);
-          return true;
-        }
-      }
-      return false;
-    } catch (error) {
-      console.error("Fehler beim Entfernen von Wörtern aus der Liste:", error);
       return false;
     }
   }

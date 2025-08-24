@@ -16,11 +16,13 @@
     </select>
   </div>
 
-  <div class="form-group">
-    <label for="new-list-name">Oder neue Liste erstellen:</label>
-    <input type="text" id="new-list-name" [(ngModel)]="newListName" placeholder="Name der neuen Liste">
-    <button (click)="createAndSelectNewList()" [disabled]="!newListName.trim()">Erstellen & Auswählen</button>
-  </div>
+  <!--
+    <div class="form-group">
+      <label for="new-list-name">Oder neue Liste erstellen:</label>
+      <input type="text" id="new-list-name" [(ngModel)]="newListName" placeholder="Name der neuen Liste">
+      <button (click)="createAndSelectNewList()" [disabled]="!newListName.trim()">Erstellen & Auswählen</button>
+    </div>
+    -->
 
   <button (click)="importWords()" [disabled]="isLoading">
     {{ isLoading ? 'Importiere...' : 'Wörter importieren' }}

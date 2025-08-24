@@ -13,7 +13,7 @@
       <button *ngFor="let list of wordLists"
               [class.selected]="selectedList && selectedList.id === list.id"
               (click)="selectList(list)">
-        {{ list.name }} ({{ list.wordIds.length }})
+        {{ list.name }}
       </button>
     </div>
   </div>

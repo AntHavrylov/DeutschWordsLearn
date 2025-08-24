@@ -29,12 +29,14 @@ export class WordImportService {
             if (!word.id) {
               word.id = uuidv4();
             }
+            if (listId) {
+              word.listId = listId; // Assign listId to the word object
+            }
             const saved = this.wordStorageService.addOrUpdateWord(word); // Capture return value
             if (saved) {
               importedCount++;
-              if (listId) { // If a listId is provided, add word to list
-                this.wordListStorageService.addWordToWordList(listId, word.originalWord); // Use word.originalWord
-              }
+              // The word is already linked to the list via word.listId, no need to add to wordList.wordIds
+              // this.wordListStorageService.addWordToWordList(listId, word.originalWord);
             }
           } catch (e) {
             errors.push({ word: word.originalWord, error: e });
