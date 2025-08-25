@@ -2,14 +2,18 @@ import { Injectable } from '@angular/core';
 import { Word, ArticleType, Kasus, WordType } from '../models/word.model';
 import { MIN_LEARNING_LEVEL, MAX_LEARNING_LEVEL } from '../constants/learning-levels';
 import { v4 as uuidv4 } from 'uuid';
+import { filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WordStorageService {
   private readonly WORDS_STORAGE_KEY = 'words';
+  private wordListKeys!: Record<string, Set<string>>;
 
-  constructor() { }
+  constructor() {
+    this.wordListKeys = {};
+  }
 
   getWords(): Word[] {
     try {
@@ -57,23 +61,18 @@ export class WordStorageService {
       if (!wordObject || !wordObject.originalWord || !wordObject.translation) {
         throw new Error("Invalid word object");
       }
-
-      const words = this.getWords();
       const newWordKey = this.generateWordKey(wordObject);
-
-      // Check for duplicates
-      const isDuplicate = words.some(existingWord => this.generateWordKey(existingWord) === newWordKey);
-      if (isDuplicate) {
-        console.warn(`Duplicate word detected: ${wordObject.originalWord}. Not adding.`);
-        return false;
-      }
-
       // Initialize learningLevel if not provided
       if (wordObject.learningLevel === undefined) {
         wordObject.learningLevel = MIN_LEARNING_LEVEL;
       }
 
+      let words = this.getWords();
       words.push(wordObject);
+      if(!this.wordListKeys[wordObject.listId]){
+        this.wordListKeys[wordObject.listId] = new Set<string>();
+      }
+      this.wordListKeys[wordObject.listId].add(newWordKey);
       this.saveWordsToLocalStorage(words);
       return true;
     } catch (error) {
@@ -83,7 +82,30 @@ export class WordStorageService {
   }
 
   addOrUpdateWord(wordObject: Word): boolean {
-    const existingWord = this.getWordById(wordObject.id);
+    debugger
+    if (Object.keys(this.wordListKeys).length == 0) {
+      this.getWords().forEach(w => {
+        if (!this.wordListKeys[w.listId]) {
+          this.wordListKeys[w.listId] = new Set<string>();
+        }
+        this.wordListKeys[w.listId].add(this.generateWordKey(w));
+      })
+    }
+    debugger
+
+    /*
+    if (!this.wordListKeys[wordObject.listId] || this.wordListKeys[wordObject.listId].length == 0) {
+      this.wordListKeys[wordObject.listId] =
+        this.getWords()
+          .filter(w => w.listId === wordObject.listId)
+          .map(w => this.generateWordKey(w));
+    }
+    */
+
+    const existingWord = 
+      this.wordListKeys[wordObject.listId] &&
+      this.wordListKeys[wordObject.listId].has(this.generateWordKey(wordObject));
+
     if (existingWord) {
       return this.updateWord(wordObject);
     } else {
@@ -97,27 +119,18 @@ export class WordStorageService {
         throw new Error("Invalid word object");
       }
       let words = this.getWords();
-      const index = words.findIndex(word => word.id === updatedWordObject.id);
+      const index = words.findIndex(word =>
+        (word.wordType == WordType.Verb && word.originalWord === updatedWordObject.originalWord && word.preposition === updatedWordObject.preposition) ||
+        (word.wordType == WordType.Noun && word.originalWord === updatedWordObject.originalWord && word.article === updatedWordObject.article) ||
+        word.originalWord === updatedWordObject.originalWord
+      );
+
       if (index !== -1) {
-        const updatedWordKey = this.generateWordKey(updatedWordObject);
-
-        // Check for duplicates against other words (excluding itself)
-        const isDuplicate = words.some(existingWord =>
-          existingWord.id !== updatedWordObject.id && this.generateWordKey(existingWord) === updatedWordKey
-        );
-        if (isDuplicate) {
-          console.warn(`Update would create a duplicate word: ${updatedWordObject.originalWord}. Not updating.`);
-          return false;
-        }
-
-        // Ensure learningLevel is initialized if not provided in the updated object
-        if (updatedWordObject.learningLevel === undefined) {
-          updatedWordObject.learningLevel = MIN_LEARNING_LEVEL;
-        }
         words[index] = updatedWordObject;
         this.saveWordsToLocalStorage(words);
         return true;
       }
+
       return false; // Word not found
     } catch (error) {
       console.error("Error updating word:", error);
