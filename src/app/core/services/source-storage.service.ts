@@ -20,13 +20,13 @@ export class SourceStorageService {
           id: uuidv4(),
           name: 'Standard',
           fileLink: 'https://docs.google.com/spreadsheets/d/1lbjxM1SVC2dn4cBLuANqiiEmar2oJN8Rbm-W6dXWHWg/edit?usp=sharing',
-          url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOUWvaVnEd9P0IlVASItInLIfzi6oyRt0lXuJs2cljPpWRmsb8hrTkOvnIAU00q9mOIElHR6FSuqNw/pub?output=csv'
+          url: 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/refs/heads/main/german_default%20-%20vocabulary.csv'
         });
         sources.push({
           id: uuidv4(),
           name: 'Verben',
           fileLink: 'https://docs.google.com/spreadsheets/d/1KIkyq-OmSDTvRkFEkE7Q6xcAdk5m_JyoThXJNbfNkOE/edit?usp=sharing',
-          url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnH791-l-QsTqI8kO8byhd7uSQLqF3uisil2tr1pQ_WeIgXf76wVQfSQRi3zwdYS9bPSP7Zzuzr4O4/pub?output=csv'
+          url: 'https://github.com/AntHavrylov/DeutschWordsLearn-csv/blob/main/german_verbs%20-%20vocabulary.csv'
         });
         this.saveSourcesToLocalStorage(sources); // Save the default source
       }
