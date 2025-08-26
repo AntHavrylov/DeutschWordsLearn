@@ -38,6 +38,10 @@ export class WordStorageService {
     return this.getWords().find(word => word.id === id);
   }
 
+  getWordByOriginalWord(originalWord: string): Word | undefined {
+    return this.getWords().find(word => word.originalWord === originalWord);
+  }
+
   private generateWordKey(word: Word): string {
     let key = word.originalWord.toLowerCase();
 

@@ -86,7 +86,7 @@ export class ImportWordsComponent implements OnInit {
     this.isLoading = true;
     this.importStatus = 'Wörter importieren...';
 
-    this.wordImportService.importWords(urlToImport, this.selectedListId).subscribe({
+    this.wordImportService.importWords(urlToImport, this.selectedListId, 'add-only').subscribe({
       next: (result) => {
         this.isLoading = false;
         if (result.success) {

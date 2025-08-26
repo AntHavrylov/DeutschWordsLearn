@@ -1,15 +1,61 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Word, WordType, ArticleType, Kasus, Preposition } from '../models/word.model';
+import { WordImportService } from './word-import.service';
+import { WordListStorageService } from './word-list-storage.service';
+import { VocabularyVersionService } from './vocabulary-version.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleSheetsService {
 
+  private wordImportService = inject(WordImportService);
+  private wordListStorageService = inject(WordListStorageService);
+  private vocabularyVersionService = inject(VocabularyVersionService);
+
   constructor(private http: HttpClient) { }
+
+  public updateVocabulary(updateStrategy: 'merge' | 'add-only'): void {
+    const standardWordsUrl = 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/main/standard.csv';
+    const verbsUrl = 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/main/verbs.csv';
+
+    this.createWordListIfNotExists('Standard');
+    this.createWordListIfNotExists('Verben');
+
+    const standardList = this.wordListStorageService.getWordListByName('Standard');
+    const verbsList = this.wordListStorageService.getWordListByName('Verben');
+
+    if (standardList) {
+      this.wordImportService.importWords(standardWordsUrl, standardList.id, updateStrategy).subscribe();
+    }
+    if (verbsList) {
+      this.wordImportService.importWords(verbsUrl, verbsList.id, updateStrategy).subscribe();
+    }
+
+    this.vocabularyVersionService.getRemoteVersion().subscribe(version => {
+      if (version !== null) {
+        this.vocabularyVersionService.setLocalVersion(version);
+      }
+    });
+  }
+
+  private createWordListIfNotExists(name: string): void {
+    let wordList = this.wordListStorageService.getWordListByName(name);
+    if (!wordList) {
+      const newWordList = {
+        id: this.generateUniqueId(),
+        name: name
+      };
+      this.wordListStorageService.createWordList(newWordList);
+    }
+  }
+
+  private generateUniqueId(): string {
+    return 'id-' + Math.random().toString(36).substr(2, 9);
+  }
 
   importWordsFromCsv(csvUrl: string): Observable<Word[]> {
     return this.http.get(csvUrl, { responseType: 'text' }).pipe(
