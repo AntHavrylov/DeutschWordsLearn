@@ -26,7 +26,7 @@ export class SourceStorageService {
           id: uuidv4(),
           name: 'Verben',
           fileLink: 'https://docs.google.com/spreadsheets/d/1KIkyq-OmSDTvRkFEkE7Q6xcAdk5m_JyoThXJNbfNkOE/edit?usp=sharing',
-          url: 'https://github.com/AntHavrylov/DeutschWordsLearn-csv/blob/main/german_verbs%20-%20vocabulary.csv'
+          url: 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/refs/heads/main/german_verbs%20-%20vocabulary.csv'
         });
         this.saveSourcesToLocalStorage(sources); // Save the default source
       }

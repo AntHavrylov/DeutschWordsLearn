@@ -1,8 +1,13 @@
 
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Injectable, WritableSignal, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, forkJoin } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { WordImportService } from './word-import.service';
+import { SourceStorageService } from './source-storage.service';
+import { WordListStorageService } from './word-list-storage.service';
+import { WordList } from '../models/word-list.model';
+import { v4 as uuidv4 } from 'uuid';
 
 const VOCABULARY_VERSION_KEY = 'vocabulary_version';
 const REMOTE_VERSION_URL = 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/refs/heads/main/version.json';
@@ -14,7 +19,12 @@ export class VocabularyVersionService {
 
   public isUpdateModalVisible: WritableSignal<boolean> = signal(false);
   
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
+  private wordImportService = inject(WordImportService);
+  private sourceStorageService = inject(SourceStorageService);
+  private wordListStorageService = inject(WordListStorageService);
+
+  constructor() { }
 
   public checkVocabularyVersion(): void {
     this.getRemoteVersion().subscribe(remoteVersion => {
@@ -24,9 +34,38 @@ export class VocabularyVersionService {
         return;
       }
       if (localVersion === null || localVersion < remoteVersion) {
-        this.isUpdateModalVisible.set(true);
+        this.importDefaultWords(remoteVersion);
       }
     });
+  }
+
+  private importDefaultWords(remoteVersion: number): void {
+    const defaultSources = this.sourceStorageService.getSources();
+    const importObservables: Observable<any>[] = [];
+
+    defaultSources.forEach(source => {
+      let wordList = this.wordListStorageService.getWordListByName(source.name);
+      if (!wordList) {
+        const newWordList: WordList = {
+          id: uuidv4(),
+          name: source.name
+        };
+        this.wordListStorageService.createWordList(newWordList);
+        wordList = newWordList;
+      }
+      importObservables.push(this.wordImportService.importWords(source.url, wordList.id, 'merge'));
+    });
+
+    forkJoin(importObservables).pipe(
+      tap(() => {
+        this.setLocalVersion(remoteVersion);
+        this.isUpdateModalVisible.set(true);
+      }),
+      catchError(error => {
+        console.error('Error importing default words:', error);
+        return of(null);
+      })
+    ).subscribe();
   }
 
   public getRemoteVersion(): Observable<number | null> {
