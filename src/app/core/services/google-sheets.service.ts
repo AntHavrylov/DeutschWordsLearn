@@ -18,44 +18,9 @@ export class GoogleSheetsService {
 
   constructor(private http: HttpClient) { }
 
-  public updateVocabulary(updateStrategy: 'merge' | 'add-only'): void {
-    const standardWordsUrl = 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/main/standard.csv';
-    const verbsUrl = 'https://raw.githubusercontent.com/AntHavrylov/DeutschWordsLearn-csv/main/verbs.csv';
+  
 
-    this.createWordListIfNotExists('Standard');
-    this.createWordListIfNotExists('Verben');
-
-    const standardList = this.wordListStorageService.getWordListByName('Standard');
-    const verbsList = this.wordListStorageService.getWordListByName('Verben');
-
-    if (standardList) {
-      this.wordImportService.importWords(standardWordsUrl, standardList.id, updateStrategy).subscribe();
-    }
-    if (verbsList) {
-      this.wordImportService.importWords(verbsUrl, verbsList.id, updateStrategy).subscribe();
-    }
-
-    this.vocabularyVersionService.getRemoteVersion().subscribe(version => {
-      if (version !== null) {
-        this.vocabularyVersionService.setLocalVersion(version);
-      }
-    });
-  }
-
-  private createWordListIfNotExists(name: string): void {
-    let wordList = this.wordListStorageService.getWordListByName(name);
-    if (!wordList) {
-      const newWordList = {
-        id: this.generateUniqueId(),
-        name: name
-      };
-      this.wordListStorageService.createWordList(newWordList);
-    }
-  }
-
-  private generateUniqueId(): string {
-    return 'id-' + Math.random().toString(36).substr(2, 9);
-  }
+  
 
   importWordsFromCsv(csvUrl: string): Observable<Word[]> {
     return this.http.get(csvUrl, { responseType: 'text' }).pipe(

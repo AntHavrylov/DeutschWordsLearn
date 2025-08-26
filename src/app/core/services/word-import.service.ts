@@ -19,8 +19,10 @@ export class WordImportService {
   constructor() { }
 
   importWords(csvUrl: string, listId: string, updateStrategy: 'merge' | 'add-only'): Observable<{ success: boolean, importedCount: number, totalCount: number, errors: any[] }> {
+    console.log(`WordImportService: importWords called for URL: ${csvUrl}, listId: ${listId}, strategy: ${updateStrategy}`);
     return this.importWordsFromCsv(csvUrl).pipe(
       map(wordsToImport => {
+        console.log(`WordImportService: ${wordsToImport.length} words to import.`);
         const errors: any[] = [];
         let importedCount = 0;
 
@@ -33,19 +35,23 @@ export class WordImportService {
             const existingWord = this.wordStorageService.getWordByOriginalWord(word.originalWord);
             if (existingWord) {
               if (updateStrategy === 'merge') {
+                console.log(`WordImportService: Merging existing word: ${word.originalWord}`);
                 const updatedWord = { ...existingWord, ...word };
                 this.wordStorageService.updateWord(updatedWord);
                 importedCount++;
               }
             } else {
+              console.log(`WordImportService: Adding new word: ${word.originalWord}`);
               this.wordStorageService.addWord(word);
               importedCount++;
             }
           } catch (e) {
             errors.push({ word: word.originalWord, error: e });
+            console.error(`WordImportService: Error processing word ${word.originalWord}:`, e);
           }
         });
 
+        console.log(`WordImportService: Import finished. Imported: ${importedCount}, Total: ${wordsToImport.length}, Errors: ${errors.length}`);
         return {
           success: errors.length === 0,
           importedCount: importedCount,
@@ -70,8 +76,10 @@ export class WordImportService {
   }
 
   private parseCsv(csvText: string): Word[] {
+    console.log('WordImportService: parseCsv called.');
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
     if (lines.length === 0) {
+      console.warn('WordImportService: CSV text is empty or contains only whitespace.');
       return [];
     }
 
@@ -81,7 +89,7 @@ export class WordImportService {
     for (let i = 1; i < lines.length; i++) {
       const values = lines[i].split(',').map(value => value.trim());
       if (values.length !== headers.length) {
-        console.warn(`Skipping malformed row: ${lines[i]}`);
+        console.warn(`WordImportService: Skipping malformed row: ${lines[i]}`);
         continue;
       }
 
@@ -114,16 +122,17 @@ export class WordImportService {
             word.reflexive = value.toLowerCase() === 'true';
             break;
           default:
-            console.warn(`Unknown header: ${header}`);
+            console.warn(`WordImportService: Unknown header: ${header}`);
         }
       });
 
       if (word.originalWord && word.translation && word.wordType) {
         words.push(word as Word);
       } else {
-        console.warn(`Skipping word due to missing required fields: ${JSON.stringify(word)}`);
+        console.warn(`WordImportService: Skipping word due to missing required fields: ${JSON.stringify(word)}`);
       }
     }
+    console.log(`WordImportService: parseCsv finished. Parsed ${words.length} words.`);
     return words;
   }
 

@@ -26,7 +26,6 @@ import { GoogleSheetsService } from './core/services/google-sheets.service';
 })
 export class AppComponent implements OnInit {
   public vocabularyVersionService = inject(VocabularyVersionService);
-  private googleSheetsService = inject(GoogleSheetsService);
 
   title = 'Wortlernen-Angular';
   currentPage: string = 'quiz'; // Default page
@@ -41,7 +40,15 @@ export class AppComponent implements OnInit {
   }
 
   handleUpdate(): void {
-    this.googleSheetsService.updateVocabulary(this.updateStrategy);
+    this.vocabularyVersionService.getRemoteVersion().subscribe(remoteVersion => {
+      if (remoteVersion !== null) {
+        this.vocabularyVersionService.triggerDefaultWordsImport(remoteVersion, this.updateStrategy);
+      } else {
+        console.error('Could not get remote version to trigger vocabulary update.');
+      }
+    });
     this.vocabularyVersionService.isUpdateModalVisible.set(false);
   }
+
+  
 }

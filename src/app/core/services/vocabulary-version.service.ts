@@ -34,12 +34,13 @@ export class VocabularyVersionService {
         return;
       }
       if (localVersion === null || localVersion < remoteVersion) {
-        this.importDefaultWords(remoteVersion);
+        this.isUpdateModalVisible.set(true);
       }
     });
   }
 
-  private importDefaultWords(remoteVersion: number): void {
+  public triggerDefaultWordsImport(remoteVersion: number, updateStrategy: 'merge' | 'add-only'): void {
+    console.log('triggerDefaultWordsImport called with remoteVersion:', remoteVersion);
     const defaultSources = this.sourceStorageService.getSources();
     const importObservables: Observable<any>[] = [];
 
@@ -53,7 +54,13 @@ export class VocabularyVersionService {
         this.wordListStorageService.createWordList(newWordList);
         wordList = newWordList;
       }
-      importObservables.push(this.wordImportService.importWords(source.url, wordList.id, 'merge'));
+      importObservables.push(this.wordImportService.importWords(source.url, wordList.id, updateStrategy).pipe(
+        tap(result => console.log(`Import from ${source.url} completed with result:`, result)),
+        catchError(error => {
+          console.error(`Error importing from ${source.url}:`, error);
+          return of({ success: false, importedCount: 0, totalCount: 0, errors: [error] });
+        })
+      ));
     });
 
     forkJoin(importObservables).pipe(
