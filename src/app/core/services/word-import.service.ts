@@ -32,19 +32,12 @@ export class WordImportService {
               word.id = uuidv4();
             }
             word.listId = listId;
-            const existingWord = this.wordStorageService.getWordByOriginalWord(word.originalWord);
-            if (existingWord) {
-              if (updateStrategy === 'merge') {
-                console.log(`WordImportService: Merging existing word: ${word.originalWord}`);
-                const updatedWord = { ...existingWord, ...word };
-                this.wordStorageService.updateWord(updatedWord);
-                importedCount++;
-              }
-            } else {
-              console.log(`WordImportService: Adding new word: ${word.originalWord}`);
-              this.wordStorageService.addWord(word);
-              importedCount++;
+
+            let result = this.wordStorageService.addOrUpdateWord(word, updateStrategy);
+            if (!result) {
+              errors.push('+');
             }
+
           } catch (e) {
             errors.push({ word: word.originalWord, error: e });
             console.error(`WordImportService: Error processing word ${word.originalWord}:`, e);
@@ -134,47 +127,5 @@ export class WordImportService {
     }
     console.log(`WordImportService: parseCsv finished. Parsed ${words.length} words.`);
     return words;
-  }
-
-  importWords_old(csvUrl: string, listId?: string): Observable<{ success: boolean, importedCount: number, totalCount: number, errors: any[] }> { // Added listId
-    return this.importWordsFromCsv(csvUrl).pipe(
-      map((wordsToImport: Word[]) => {
-        const errors: any[] = [];
-        let importedCount = 0;
-
-        wordsToImport.forEach(word => {
-          try {
-            if (!word.id) {
-              word.id = uuidv4();
-            }
-            if (listId) {
-              word.listId = listId; // Assign listId to the word object
-            }
-            const saved = this.wordStorageService.addOrUpdateWord(word); // Capture return value
-            if (saved) {
-              importedCount++;
-              // The word is already linked to the list via word.listId, no need to add to wordList.wordIds
-              // this.wordListStorageService.addWordToWordList(listId, word.originalWord);
-            }
-          } catch (e) {
-            errors.push({ word: word.originalWord, error: e });
-          }
-        });
-
-        return {
-          success: errors.length === 0,
-          importedCount: importedCount,
-          totalCount: wordsToImport.length,
-          errors: errors
-        };
-      }),
-      catchError(error => {
-        console.error('Error importing words:', error);
-        return new Observable<{ success: boolean, importedCount: number, totalCount: number, errors: any[] }>(observer => {
-          observer.next({ success: false, importedCount: 0, totalCount: 0, errors: [error] });
-          observer.complete();
-        });
-      })
-    );
   }
 }

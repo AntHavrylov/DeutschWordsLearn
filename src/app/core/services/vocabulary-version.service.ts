@@ -66,7 +66,7 @@ export class VocabularyVersionService {
     forkJoin(importObservables).pipe(
       tap(() => {
         this.setLocalVersion(remoteVersion);
-        this.isUpdateModalVisible.set(true);
+        this.isUpdateModalVisible.set(false);
       }),
       catchError(error => {
         console.error('Error importing default words:', error);

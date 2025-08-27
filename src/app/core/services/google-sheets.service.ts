@@ -3,24 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Word, WordType, ArticleType, Kasus, Preposition } from '../models/word.model';
-import { WordImportService } from './word-import.service';
-import { WordListStorageService } from './word-list-storage.service';
-import { VocabularyVersionService } from './vocabulary-version.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleSheetsService {
 
-  private wordImportService = inject(WordImportService);
-  private wordListStorageService = inject(WordListStorageService);
-  private vocabularyVersionService = inject(VocabularyVersionService);
-
   constructor(private http: HttpClient) { }
-
-  
-
-  
 
   importWordsFromCsv(csvUrl: string): Observable<Word[]> {
     return this.http.get(csvUrl, { responseType: 'text' }).pipe(
@@ -84,6 +73,7 @@ export class GoogleSheetsService {
         console.warn(`Skipping word due to missing required fields: ${JSON.stringify(word)}`);
       }
     }
+    debugger
     return words;
   }
 }

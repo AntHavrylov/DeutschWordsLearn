@@ -27,7 +27,7 @@ import { GoogleSheetsService } from './core/services/google-sheets.service';
 export class AppComponent implements OnInit {
   public vocabularyVersionService = inject(VocabularyVersionService);
 
-  title = 'Wortlernen-Angular';
+  title = 'Wortlernen';
   currentPage: string = 'quiz'; // Default page
   updateStrategy: 'merge' | 'add-only' = 'add-only';
 

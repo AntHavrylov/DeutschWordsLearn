@@ -53,7 +53,9 @@ export class QuizComponent implements OnInit {
   iKnowThisWord(): void {
     if (this.currentWord) {
       // Find the actual Word object from wordStorageService to update its learningLevel
+      debugger
       const wordToUpdate = this.wordStorageService.getWordById(this.currentWord.id);
+
       if (wordToUpdate) {
         wordToUpdate.learningLevel = MAX_LEARNING_LEVEL;
         wordToUpdate.learnStatus = MAX_LEARNING_LEVEL; // Set learnStatus to 7 (100%)

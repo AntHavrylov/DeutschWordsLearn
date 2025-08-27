@@ -241,10 +241,10 @@ export class QuizService {
 
     // Update word learn statuses
     results.correctAnswers.forEach(word => {
-      this.wordStorageService.updateWordLearnStatus(word.originalWord, true);
+      this.wordStorageService.updateWordLearnStatus(word, true);
     });
     results.incorrectAnswers.forEach(word => {
-      this.wordStorageService.updateWordLearnStatus(word.originalWord, false);
+      this.wordStorageService.updateWordLearnStatus(word, false);
     });
 
     return results;
