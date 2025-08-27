@@ -15,17 +15,8 @@ export class WordListStorageService {
   getWordLists(): WordList[] {
     try {
       const localData = localStorage.getItem(this.WORD_LISTS_STORAGE_KEY);
-      let wordLists: WordList[] = localData ? JSON.parse(localData) : [];
-
-      if (wordLists.length === 0) {
-        // Initialize with default list if no lists exist
-        const defaultList: WordList = {
-          id: uuidv4(), // Use a fixed ID for the default list
-          name: 'Meine erste Liste',
-        };
-        wordLists.push(defaultList);
-        this.saveWordListsToLocalStorage(wordLists); // Save the default list
-      }
+      let wordLists: WordList[] = localData ? JSON.parse(localData) : [];    
+      
       return wordLists;
     } catch (error) {
       console.error("Fehler beim Abrufen der Wortlisten:", error);
@@ -94,5 +85,30 @@ export class WordListStorageService {
     } catch (error) {
       console.error("Fehler beim Speichern der Wortlisten im lokalen Speicher:", error);
     }
+  }
+
+  public getWordListByName(name: string): WordList | undefined {
+    const wordLists = this.getWordLists();
+    return wordLists.find(list => list.name === name);
+  }
+
+  public createWordList(wordList: WordList): void {
+    const wordLists = this.getWordLists();
+    wordLists.push(wordList);
+    this.saveWordListsToLocalStorage(wordLists);
+  }
+
+  public updateWordList(wordList: WordList): void {
+    const wordLists = this.getWordLists();
+    const index = wordLists.findIndex(list => list.id === wordList.id);
+    if (index !== -1) {
+      wordLists[index] = wordList;
+      this.saveWordListsToLocalStorage(wordLists);
+    }
+  }
+
+  public getWordListById(id: string): WordList | undefined {
+    const wordLists = this.getWordLists();
+    return wordLists.find(list => list.id === id);
   }
 }

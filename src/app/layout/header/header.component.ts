@@ -1,10 +1,10 @@
 import { Component, Output, EventEmitter, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule for ngIf/ngFor if needed in template
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  standalone: true, // Ensure standalone is true if not already
-  imports: [CommonModule], // Add CommonModule
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -13,7 +13,7 @@ export class HeaderComponent {
 
   isHeaderExpanded: boolean = true;
   private lastScrollTop: number = 0;
-  private SCROLL_THRESHOLD = 50; // Pixels to scroll before shrinking/expanding
+  private SCROLL_THRESHOLD = 50;
   private scrollTimeout: any;
 
   @HostListener('window:scroll', ['$event'])
@@ -33,7 +33,7 @@ export class HeaderComponent {
       }
 
       this.lastScrollTop = currentScrollTop;
-    }, 100); // 100ms debounce time
+    }, 100);
   }
 
   onNavigate(page: string): void {

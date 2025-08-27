@@ -69,7 +69,7 @@ export class WordStorageService {
 
       let words = this.getWords();
       words.push(wordObject);
-      if(!this.wordListKeys[wordObject.listId]){
+      if (!this.wordListKeys[wordObject.listId]) {
         this.wordListKeys[wordObject.listId] = new Set<string>();
       }
       this.wordListKeys[wordObject.listId].add(newWordKey);
@@ -81,8 +81,7 @@ export class WordStorageService {
     }
   }
 
-  addOrUpdateWord(wordObject: Word): boolean {
-    debugger
+  addOrUpdateWord(wordObject: Word, updateStrategy: 'merge' | 'add-only' = 'merge'): boolean {
     if (Object.keys(this.wordListKeys).length == 0) {
       this.getWords().forEach(w => {
         if (!this.wordListKeys[w.listId]) {
@@ -91,26 +90,27 @@ export class WordStorageService {
         this.wordListKeys[w.listId].add(this.generateWordKey(w));
       })
     }
-    debugger
 
-    /*
-    if (!this.wordListKeys[wordObject.listId] || this.wordListKeys[wordObject.listId].length == 0) {
-      this.wordListKeys[wordObject.listId] =
-        this.getWords()
-          .filter(w => w.listId === wordObject.listId)
-          .map(w => this.generateWordKey(w));
-    }
-    */
-
-    const existingWord = 
+    const existingWord =
       this.wordListKeys[wordObject.listId] &&
       this.wordListKeys[wordObject.listId].has(this.generateWordKey(wordObject));
 
-    if (existingWord) {
+    if (existingWord && updateStrategy === 'merge') {
       return this.updateWord(wordObject);
-    } else {
+    }
+    if (!existingWord) {
       return this.addWord(wordObject);
     }
+    return false;
+  }
+
+  findWordIndex(originalWord: Word, words: Word[]) {
+    const index = words.findIndex(word =>
+      (word.wordType == WordType.Verb && word.originalWord === originalWord.originalWord && word.preposition === originalWord.preposition) ||
+      (word.wordType == WordType.Noun && word.originalWord === originalWord.originalWord && word.article === originalWord.article) ||
+      word.originalWord === originalWord.originalWord
+    );
+    return index;
   }
 
   updateWord(updatedWordObject: Word): boolean {
@@ -119,19 +119,14 @@ export class WordStorageService {
         throw new Error("Invalid word object");
       }
       let words = this.getWords();
-      const index = words.findIndex(word =>
-        (word.wordType == WordType.Verb && word.originalWord === updatedWordObject.originalWord && word.preposition === updatedWordObject.preposition) ||
-        (word.wordType == WordType.Noun && word.originalWord === updatedWordObject.originalWord && word.article === updatedWordObject.article) ||
-        word.originalWord === updatedWordObject.originalWord
-      );
-
+      const index = this.findWordIndex(updatedWordObject, words);
       if (index !== -1) {
         words[index] = updatedWordObject;
         this.saveWordsToLocalStorage(words);
         return true;
       }
+      return false; 
 
-      return false; // Word not found
     } catch (error) {
       console.error("Error updating word:", error);
       return false;
@@ -301,18 +296,15 @@ export class WordStorageService {
     return null;
   }
 
-  updateWordLearnStatus(originalWord: string, isCorrect: boolean): void {
-    const words = this.getWords();
-    const wordIndex = words.findIndex(w => w.originalWord === originalWord);
-    if (wordIndex > -1) {
-      const word = words[wordIndex];
+  updateWordLearnStatus(originalWord: Word, isCorrect: boolean): void {
+    if (originalWord) {
       if (isCorrect) {
-        word.learnStatus = Math.min(MAX_LEARNING_LEVEL, (word.learnStatus || MIN_LEARNING_LEVEL) + 1);
+        originalWord.learnStatus = Math.min(MAX_LEARNING_LEVEL, (originalWord.learnStatus || MIN_LEARNING_LEVEL) + 1);
       } else {
-        word.learnStatus = Math.max(MIN_LEARNING_LEVEL, (word.learnStatus || MIN_LEARNING_LEVEL) - 1);
+        originalWord.learnStatus = Math.max(MIN_LEARNING_LEVEL, (originalWord.learnStatus || MIN_LEARNING_LEVEL) - 1);
       }
-      word.learningLevel = word.learnStatus;
-      this.addOrUpdateWord(word);
+      originalWord.learningLevel = originalWord.learnStatus;
+      this.addOrUpdateWord(originalWord);
     }
   }
 }

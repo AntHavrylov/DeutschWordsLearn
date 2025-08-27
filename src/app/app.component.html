@@ -9,3 +9,24 @@
 </main>
 
 <app-footer></app-footer>
+
+<div class="modal" *ngIf="vocabularyVersionService.isUpdateModalVisible()">
+  <div class="modal-content">
+    <h2>Eine neue Version des Vokabulars ist verfügbar.</h2>
+    <p>Möchten Sie die Wortlisten aktualisieren?</p>
+    <div class="radio-group">
+      <label>
+        <input type="radio" name="updateStrategy" value="add-only" [(ngModel)]="updateStrategy">
+        Nur neue Wörter hinzufügen
+      </label>
+      <label>
+        <input type="radio" name="updateStrategy" value="merge" [(ngModel)]="updateStrategy">
+        Duplikate aktualisieren
+      </label>
+    </div>
+    <div class="button-group">
+        <button (click)="handleUpdate()">Aktualisieren</button>
+        <button (click)="vocabularyVersionService.isUpdateModalVisible.set(false)">Abbrechen</button>
+    </div>
+  </div>
+</div>
