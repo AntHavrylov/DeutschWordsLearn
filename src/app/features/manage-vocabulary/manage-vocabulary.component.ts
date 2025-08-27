@@ -22,24 +22,30 @@ import { debounce } from 'rxjs';
 })
 export class ManageVocabularyComponent {
 
-  public vocabularyVersionService = inject(VocabularyVersionService);
+  private vocabularyVersionService = inject(VocabularyVersionService);
 
   currentSubPage: string = 'word-list-manager'; // Default sub-page
-  
+
 
   navigateToSubPage(subPage: string): void {
     this.currentSubPage = subPage;
   }
 
-  syncVocabulary()
-  {
+  syncVocabulary() {
+    if(confirm(`Durch diese Aktion werden alle neuen Wörter vom Server zu Ihrem Standardwortschatz hinzugefügt. Fortfahren?`))
     this.vocabularyVersionService.getRemoteVersion().subscribe(remoteVersion => {
       if (remoteVersion !== null) {
         this.vocabularyVersionService.triggerDefaultWordsImport(remoteVersion, 'add-only');
-        
+
       } else {
         console.error('Could not get remote version to trigger vocabulary update.');
       }
     });
+  }
+
+  resetAllData() {
+    if (confirm(`Möchtest du wirklich alle Daten löschen?`)) {
+      localStorage.clear();
+    }
   }
 }

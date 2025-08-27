@@ -4,7 +4,7 @@
     --primary-color: #E0FFFF; /* Muted gray-blue for subtle contrast */
     --secondary-color: #fca311; /* Orange */
     --background-color: #e0f2f7; /* Very light blue */
-    --text-color: #f8f9fa; /* Lighter text for better contrast on gradient */
+    --text-color: #666666; /* Lighter text for better contrast on gradient */
     --card-background: rgba(220, 220, 220, 0.35); /* Transparent white */
     --border-radius: 12px;
     --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -82,7 +82,7 @@ body {
 }
 
 body.high-contrast {
-    --primary-color: #2962ff; /* A strong, accessible blue */
+    --primary-color: #4f7bf1; /* A strong, accessible blue */
     --secondary-color: #ff6d00; /* A vibrant, but not jarring, orange */
     --background-color: #1a202c; /* A dark, desaturated blue */
     --text-color: #ffffff; /* White for maximum contrast */
@@ -480,7 +480,7 @@ h2 {
 
 .card h2 {
     margin-top: 0;
-    color: #495057;
+    color: var(--text-color);
     font-family: var(--font-family-secondary);
     font-size: 1.3rem; /* Smaller font size */
 }
@@ -491,7 +491,7 @@ h2 {
     font-size: 0.9rem; /* Smaller font size */
     max-width: 100%; /* Ensure description doesn't exceed card width */
     word-wrap: break-word; /* Break long words */
-    color: #495057;
+    color: var(--text-color);
 }
 
 .card .options button {
@@ -503,7 +503,7 @@ h2 {
     padding: 0.6rem; /* Smaller padding */
     font-size: 0.9rem; /* Smaller font size */
     box-shadow: var(--box-shadow);
-    color: #495057; /* Changed to var(--text-color) */
+    color: var(--text-color); /* Changed to var(--text-color) */
 }
 
 .card .options button:hover {
