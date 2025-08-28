@@ -9,6 +9,7 @@ import { WordStorageService } from '../../core/services/word-storage.service'; /
 import { MAX_LEARNING_LEVEL } from '../../core/constants/learning-levels'; // Import MAX_LEARNING_LEVEL
 import { WordList } from '../../core/models/word-list.model'; // Added this
 import { FormsModule } from '@angular/forms'; // Added FormsModule for select
+import { WordListManagerComponent } from '../word-list-manager/word-list-manager.component';
 
 @Component({
   selector: 'app-quiz',
@@ -50,16 +51,15 @@ export class QuizComponent implements OnInit {
     }
   }
 
-  iKnowThisWord(): void {
+  iKnowThisWord(word: QuizWord): void {
     if (this.currentWord) {
-      // Find the actual Word object from wordStorageService to update its learningLevel
-      debugger
-      const wordToUpdate = this.wordStorageService.getWordById(this.currentWord.id);
-
-      if (wordToUpdate) {
-        wordToUpdate.learningLevel = MAX_LEARNING_LEVEL;
-        wordToUpdate.learnStatus = MAX_LEARNING_LEVEL; // Set learnStatus to 7 (100%)
-        this.wordStorageService.addOrUpdateWord(wordToUpdate);
+      const words = this.wordStorageService.getWords();
+      const wIndex = 
+      this.wordStorageService.findWordIndex(word,words);
+      if(wIndex !== -1){
+        words[wIndex].learningLevel = MAX_LEARNING_LEVEL;
+        words[wIndex].learnStatus = MAX_LEARNING_LEVEL;
+        this.wordStorageService.saveWordsToLocalStorage(words);
       }
       this.quizService.nextCard();
       this.updateCurrentWord();

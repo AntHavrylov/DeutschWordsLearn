@@ -96,7 +96,7 @@ export class WordStorageService {
       this.wordListKeys[wordObject.listId].has(this.generateWordKey(wordObject));
 
     if (existingWord && updateStrategy === 'merge') {
-      return this.updateWord(wordObject);
+      return this.updateWordKeepingLearningStatus(wordObject);
     }
     if (!existingWord) {
       return this.addWord(wordObject);
@@ -120,12 +120,30 @@ export class WordStorageService {
       }
       let words = this.getWords();
       const index = this.findWordIndex(updatedWordObject, words);
-      if (index !== -1) {
-        const learningLevel = words[index].learningLevel;
-        const learnStatus = words[index].learnStatus;
+      if (index !== -1) {        
         words[index] = updatedWordObject;
-        words[index].learningLevel = learningLevel;
-        words[index].learnStatus = learnStatus;
+        this.saveWordsToLocalStorage(words);
+        return true;
+      }
+      return false; 
+
+    } catch (error) {
+      console.error("Error updating word:", error);
+      return false;
+    }
+  }
+
+  updateWordKeepingLearningStatus(updatedWordObject: Word): boolean{
+    try {
+      if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {
+        throw new Error("Invalid word object");
+      }
+      let words = this.getWords();
+      const index = this.findWordIndex(updatedWordObject, words);
+      if (index !== -1) {
+        updatedWordObject.learningLevel = words[index].learningLevel;
+        updatedWordObject.learnStatus = words[index].learnStatus;
+        words[index] = updatedWordObject;
         this.saveWordsToLocalStorage(words);
         return true;
       }
@@ -271,7 +289,7 @@ export class WordStorageService {
     }
   }
 
-  private saveWordsToLocalStorage(words: Word[]): void {
+  saveWordsToLocalStorage(words: Word[]): void {
     try {
       localStorage.setItem(this.WORDS_STORAGE_KEY, JSON.stringify(words));
     } catch (error) {

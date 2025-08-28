@@ -98,7 +98,7 @@
                 </div>
                 
                 <div class="quiz-navigation">
-                    <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord()">Ich weiß es!</button>
+                    <button id="i-know-btn" class="btn btn-success" (click)="iKnowThisWord(currentWord)">Ich weiß es!</button>
                     <button id="next-btn" class="btn" (click)="next()">{{ currentWord.answer === null ? 'Submit Answer' : 'Next Question' }}</button>
                 </div>
                 <div class="quiz-progress">
