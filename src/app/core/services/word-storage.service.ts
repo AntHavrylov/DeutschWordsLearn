@@ -121,7 +121,11 @@ export class WordStorageService {
       let words = this.getWords();
       const index = this.findWordIndex(updatedWordObject, words);
       if (index !== -1) {
+        const learningLevel = words[index].learningLevel;
+        const learnStatus = words[index].learnStatus;
         words[index] = updatedWordObject;
+        words[index].learningLevel = learningLevel;
+        words[index].learnStatus = learnStatus;
         this.saveWordsToLocalStorage(words);
         return true;
       }
