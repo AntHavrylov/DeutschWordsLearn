@@ -35,7 +35,7 @@ export class ManageVocabularyComponent {
     if(confirm(`Durch diese Aktion werden alle neuen Wörter vom Server zu Ihrem Standardwortschatz hinzugefügt. Fortfahren?`))
     this.vocabularyVersionService.getRemoteVersion().subscribe(remoteVersion => {
       if (remoteVersion !== null) {
-        this.vocabularyVersionService.triggerDefaultWordsImport(remoteVersion, 'add-only');
+        this.vocabularyVersionService.triggerDefaultWordsImport(remoteVersion, 'merge');
 
       } else {
         console.error('Could not get remote version to trigger vocabulary update.');
