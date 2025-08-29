@@ -21,7 +21,6 @@ export class WordListManagerComponent implements OnInit {
   selectedList: WordList | null = null;
   allWords: Word[] = [];
   wordsInSelectedList: Word[] = [];
-  availableWordsToAdd: Word[] = [];
   selectedWordToAdd: string = ''; // Stores word originalWord
   public readonly MAX_LEARNING_LEVEL = MAX_LEARNING_LEVEL;
 
@@ -48,7 +47,6 @@ export class WordListManagerComponent implements OnInit {
 
   loadAllWords(): void {
     this.allWords = this.wordStorageService.getWords();
-    this.updateAvailableWordsToAdd();
   }
 
   createList(): void {
@@ -69,7 +67,6 @@ export class WordListManagerComponent implements OnInit {
     this.wordsInSelectedList = this.allWords.filter(word =>
       word.listId === list.id
     );
-    this.updateAvailableWordsToAdd();
   }
 
   deleteList(listId: string): void {
@@ -134,16 +131,6 @@ export class WordListManagerComponent implements OnInit {
     this.loadAllWords(); // Refresh the list
     if (this.selectedList) {
       this.selectList(this.selectedList); // Re-select list to refresh display
-    }
-  }
-
-  updateAvailableWordsToAdd(): void {
-    if (this.selectedList) {
-      this.availableWordsToAdd = this.allWords.filter(word =>
-        word.listId !== this.selectedList!.id
-      );
-    } else {
-      this.availableWordsToAdd = [];
     }
   }
 

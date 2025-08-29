@@ -48,15 +48,5 @@
         </div>
       </div>
     </div>
-
-    <h4>Wörter zur Liste hinzufügen:</h4>
-    <div *ngIf="availableWordsToAdd.length === 0">Keine weiteren Wörter zum Hinzufügen.</div>
-    <select [(ngModel)]="selectedWordToAdd" *ngIf="availableWordsToAdd.length > 0">
-      <option value="">-- Wort auswählen --</option>
-      <option *ngFor="let word of availableWordsToAdd" [value]="word.originalWord">
-        {{ word.originalWord }} - {{ word.translation }}
-      </option>
-    </select>
-    <button (click)="addWordToList()" [disabled]="!selectedWordToAdd">Ausgewähltes Wort hinzufügen</button>
   </div>
 </section>
