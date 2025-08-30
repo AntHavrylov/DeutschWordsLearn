@@ -55,7 +55,7 @@ export class WordListComponent implements OnInit {
       this.filteredWords.forEach(word => {
         word.learningLevel = MIN_LEARNING_LEVEL;
         word.learnStatus = MIN_LEARNING_LEVEL;
-        this.wordStorageService.addOrUpdateWord(word);
+        this.wordStorageService.updateWord(word);
       });
       this.loadWords(); // Refresh the list after updating all words
     }
@@ -64,14 +64,14 @@ export class WordListComponent implements OnInit {
   iKnowThisWord(word: Word): void {
     word.learningLevel = MAX_LEARNING_LEVEL;
     word.learnStatus = MAX_LEARNING_LEVEL;
-    this.wordStorageService.addOrUpdateWord(word);
+    this.wordStorageService.updateWord(word);
     this.loadWords(); // Refresh the list
   }
 
   resetLearningLevel(word: Word): void {
     word.learningLevel = MIN_LEARNING_LEVEL;
     word.learnStatus = MIN_LEARNING_LEVEL;
-    this.wordStorageService.addOrUpdateWord(word);
+    this.wordStorageService.updateWord(word);
     this.loadWords(); // Refresh the list
   }
 }

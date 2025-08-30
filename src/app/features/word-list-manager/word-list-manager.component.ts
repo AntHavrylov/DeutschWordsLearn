@@ -117,7 +117,7 @@ export class WordListManagerComponent implements OnInit {
   iKnowThisWord(word: Word): void {
     word.learningLevel = MAX_LEARNING_LEVEL;
     word.learnStatus = MAX_LEARNING_LEVEL;
-    this.wordStorageService.addOrUpdateWord(word);
+    this.wordStorageService.updateWord(word);
     this.loadAllWords(); // Refresh the list
     if (this.selectedList) {
       this.selectList(this.selectedList); // Re-select list to refresh display
@@ -127,7 +127,7 @@ export class WordListManagerComponent implements OnInit {
   resetLearningLevel(word: Word): void {
     word.learningLevel = MIN_LEARNING_LEVEL;
     word.learnStatus = MIN_LEARNING_LEVEL;
-    this.wordStorageService.addOrUpdateWord(word);
+    this.wordStorageService.updateWord(word);
     this.loadAllWords(); // Refresh the list
     if (this.selectedList) {
       this.selectList(this.selectedList); // Re-select list to refresh display

@@ -90,8 +90,7 @@ export class WordStorageService {
         this.wordListKeys[w.listId].add(this.generateWordKey(w));
       })
     }
-
-    const existingWord =
+    const existingWord = 
       this.wordListKeys[wordObject.listId] &&
       this.wordListKeys[wordObject.listId].has(this.generateWordKey(wordObject));
 
@@ -105,12 +104,11 @@ export class WordStorageService {
   }
 
   findWordIndex(originalWord: Word, words: Word[]) {
-    const index = words.findIndex(word =>
+    return words.findIndex(word =>
       (word.wordType == WordType.Verb && word.originalWord === originalWord.originalWord && word.preposition === originalWord.preposition) ||
       (word.wordType == WordType.Noun && word.originalWord === originalWord.originalWord && word.article === originalWord.article) ||
       word.originalWord === originalWord.originalWord
     );
-    return index;
   }
 
   updateWord(updatedWordObject: Word): boolean {
@@ -120,20 +118,19 @@ export class WordStorageService {
       }
       let words = this.getWords();
       const index = this.findWordIndex(updatedWordObject, words);
-      if (index !== -1) {        
-        words[index] = updatedWordObject;
-        this.saveWordsToLocalStorage(words);
-        return true;
+      if (index == -1) {
+        return false;
       }
-      return false; 
-
+      words[index] = updatedWordObject;
+      this.saveWordsToLocalStorage(words);
+      return true;
     } catch (error) {
       console.error("Error updating word:", error);
       return false;
     }
   }
 
-  updateWordKeepingLearningStatus(updatedWordObject: Word): boolean{
+  updateWordKeepingLearningStatus(updatedWordObject: Word): boolean {
     try {
       if (!updatedWordObject || !updatedWordObject.originalWord || !updatedWordObject.translation) {
         throw new Error("Invalid word object");
@@ -147,7 +144,7 @@ export class WordStorageService {
         this.saveWordsToLocalStorage(words);
         return true;
       }
-      return false; 
+      return false;
 
     } catch (error) {
       console.error("Error updating word:", error);

@@ -61,7 +61,9 @@ export class QuizComponent implements OnInit {
         words[wIndex].learnStatus = MAX_LEARNING_LEVEL;
         this.wordStorageService.saveWordsToLocalStorage(words);
       }
-      this.quizService.nextCard();
+      //this.quizService.nextCard();
+
+      
       this.updateCurrentWord();
     }
   }
